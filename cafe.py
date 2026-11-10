@@ -1,168 +1,246 @@
-import streamlit as st
-from supabase import create_client, Client
 import random
 import time
 
-# --- Supabase 연결 ---
+import streamlit as st
+from supabase import create_client, Client
+
+st.set_page_config(page_title="☕ 갓썸 카페 타이쿤", layout="wide")
+
+# ---------------- Supabase ----------------
 @st.cache_resource
 def init_connection():
-    url = "https://ccmsgkiqyolowhhgkxnl.supabase.co"
-    key = "sb_publishable_B3WFuDeKlbBQRWjaBXbNXQ_QgLp0JP0"
-    return create_client(url, key)
+    return create_client("당신의_SUPABASE_URL", "당신의_SUPABASE_ANON_KEY")
 
 supabase: Client = init_connection()
-PLAYER_NAME = 'player1'
+PLAYER_NAME = "player1"
+ARRIVE_SEC = 2.5      # 손님이 걸어 들어오는 시간
+LEAVE_SEC = 2.5       # 손님이 나가는 시간
+PATIENCE_SEC = 45     # 주문 후 인내심 (초)
+MAX_CUP = 6
 
-# --- 세션 상태 초기화 (게임 데이터 저장) ---
-if 'current_cup' not in st.session_state:
-    st.session_state.current_cup = [] # 유저가 넣은 재료 ID 리스트
-if 'current_order' not in st.session_state:
-    st.session_state.current_order = None # 현재 손님의 주문 (menu_id)
-if 'message' not in st.session_state:
-    st.session_state.message = "영업을 시작하세요!"
-
-# --- DB 데이터 불러오기 ---
-def get_menus():
-    return supabase.table('menus').select('*').execute().data
+@st.cache_data(ttl=30)
+def load_menus_recipes():
+    menus = supabase.table("menus").select("*").execute().data
+    rec = {}
+    rows = supabase.table("recipes").select("menu_id,ingredient_id,step_order").order("step_order").execute().data
+    for r in rows:
+        rec.setdefault(r["menu_id"], []).append(r["ingredient_id"])
+    return menus, rec
 
 def get_ingredients():
-    return supabase.table('ingredients').select('*').order('id').execute().data
+    return supabase.table("ingredients").select("*").order("id").execute().data
 
-def get_recipe(menu_id):
-    return supabase.table('recipes').select('ingredient_id').eq('menu_id', menu_id).order('step_order').execute().data
+def get_money():
+    return supabase.table("players").select("money").eq("username", PLAYER_NAME).execute().data[0]["money"]
 
-def get_player_info():
-    return supabase.table('players').select('money').eq('username', PLAYER_NAME).execute().data[0]
-
-# --- 게임 로직 함수 ---
-def new_customer():
-    menus = get_menus()
-    st.session_state.current_order = random.choice(menus)
-    st.session_state.current_cup = []
-    st.session_state.message = f"손님: '{st.session_state.current_order['name']} 한 잔 주세요!'"
-
-def add_ingredient(ing_id):
-    st.session_state.current_cup.append(ing_id)
-
-def throw_trash():
-    if len(st.session_state.current_cup) > 0:
-        # DB RPC 호출 (실패 처리 - 재고만 깎임)
-        supabase.rpc('serve_drink', {
-            'p_username': PLAYER_NAME,
-            'p_menu_id': st.session_state.current_order['id'],
-            'p_used_ingredients': st.session_state.current_cup,
-            'p_is_success': False
-        }).execute()
-        st.session_state.current_cup = []
-        st.session_state.message = "으악 망했다! 쓰레기통에 버렸습니다. (재고 낭비)"
-    else:
-        st.session_state.message = "버릴 컵이 비어있습니다."
-
-def serve_drink():
-    if not st.session_state.current_order:
-        return
-
-    # 정답 레시피 가져오기
-    correct_recipe_data = get_recipe(st.session_state.current_order['id'])
-    correct_recipe = [item['ingredient_id'] for item in correct_recipe_data]
-    
-    # 레시피 검증 (순서까지 완벽히 맞아야 함)
-    is_success = (st.session_state.current_cup == correct_recipe)
-    
-    # DB RPC 호출 (트랜잭션 처리)
-    response = supabase.rpc('serve_drink', {
-        'p_username': PLAYER_NAME,
-        'p_menu_id': st.session_state.current_order['id'],
-        'p_used_ingredients': st.session_state.current_cup,
-        'p_is_success': is_success
+def call_serve(menu_id, cup, ok):
+    supabase.rpc("serve_drink", {
+        "p_username": PLAYER_NAME, "p_menu_id": menu_id,
+        "p_used_ingredients": cup, "p_is_success": ok,
     }).execute()
 
-    if is_success:
-        st.session_state.message = f"완벽해! +{st.session_state.current_order['price']}원 획득!"
-        # 손님 돌아가고 컵 비우기
-        st.session_state.current_order = None
-        st.session_state.current_cup = []
-    else:
-        st.session_state.message = "손님: 이게 무슨 맛인가요?! 환불해주세요! 😡 (실패)"
-        # 실패 시 컵은 그대로 두거나 버리도록 유도
+# ---------------- 상태 ----------------
+S = st.session_state
+S.setdefault("cup", [])
+S.setdefault("cust", None)          # 현재 손님 dict
+S.setdefault("last_leave", time.time() - 10)
+S.setdefault("msg", "영업 시작! 손님을 기다리는 중...")
+S.setdefault("served", 0)
+S.money = get_money()
+menus, recipes = load_menus_recipes()
+ings = get_ingredients()
+ing_by_id = {i["id"]: i for i in ings}
 
-# --- UI 레이아웃 ---
-st.set_page_config(page_title="☕ 갓썸 카페 타이쿤", layout="wide")
+COLORS = {"물": "#8ecae6", "에스프레소": "#3b2314", "얼음": "#d9f2ff", "우유": "#fff4e0",
+          "시럽": "#c9772e", "초코": "#5a3420", "휘핑": "#ffffff", "카라멜": "#d08a3a"}
+def color_of(ing):
+    return COLORS.get(ing["name"], f"hsl({ing['id'] * 67 % 360},55%,55%)")
+
+FACES = ["🧑", "👩", "👨", "👵", "🧔", "👧", "👴", "🧑‍🦰"]
+SHIRTS = ["#ff6b57", "#ffcf4a", "#6c8ef5", "#b583e8", "#4cc38a", "#f58fb3"]
+
+# ---------------- 게임 로직 (콜백) ----------------
+def take_order():
+    c, now = S.cust, time.time()
+    if not c or c["t_leave"]:
+        S.msg = "받을 주문이 없어요."
+    elif c["t_order"]:
+        S.msg = "이미 주문을 받았어요. 음료를 만들어 보세요!"
+    elif now - c["t_spawn"] < ARRIVE_SEC:
+        S.msg = "손님이 아직 걸어오는 중이에요."
+    else:
+        c["t_order"] = now
+        S.msg = f"주문 접수! '{c['menu']['name']}' 만들어 주세요."
+
+def add_ingredient(ing_id):
+    if len(S.cup) < MAX_CUP:
+        S.cup.append(ing_id)
+
+def throw_trash():
+    if not S.cup:
+        S.msg = "버릴 컵이 비어있습니다."
+        return
+    mid = S.cust["menu"]["id"] if S.cust else menus[0]["id"]  # 손님 없을 때도 재고 차감 기록
+    call_serve(mid, S.cup, False)
+    S.cup = []
+    S.msg = "으악 망했다! 쓰레기통에 버렸습니다. (재고 낭비)"
+
+def serve_drink():
+    c = S.cust
+    if not c or not c["t_order"] or c["t_leave"]:
+        S.msg = "먼저 손님의 주문을 받으세요!"
+        return
+    if not S.cup:
+        S.msg = "컵이 비어있어요."
+        return
+    ok = S.cup == recipes.get(c["menu"]["id"], [])   # 순서까지 일치해야 성공
+    call_serve(c["menu"]["id"], S.cup, ok)
+    S.cup = []
+    if ok:
+        c["t_leave"], c["happy"] = time.time(), True
+        S.served += 1
+        S.msg = f"완벽해! +{c['menu']['price']:,}원 획득!"
+    else:
+        c["penalty"] += 20
+        S.msg = "손님: 이게 무슨 맛인가요?! 😡 (버리고 다시 만들어 보세요)"
+
+# ---------------- 스타일 ----------------
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+html, body, [class*="st-"], button { font-family: 'Jua', sans-serif !important; }
+.block-container { padding-top: 1rem; }
+.scene { position: relative; height: 430px; overflow: hidden; border-radius: 18px; border: 4px solid #3a2318;
+  background: linear-gradient(#0000 0 60%, #0000 60%), linear-gradient(#9ad3c2 0 58%, #2e6b63 58% 66%, #f2e3c6 66%); }
+.floor { position:absolute; left:0; right:0; top:66%; bottom:0;
+  background: conic-gradient(#f2e3c6 25%,#d9b98a 0 50%,#f2e3c6 0 75%,#d9b98a 0) 0 0/60px 60px; }
+.win { position:absolute; left:50px; top:40px; width:150px; height:140px; border:9px solid #6b3f2a;
+  border-radius:75px 75px 4px 4px; background:linear-gradient(#ffe9a8,#bfe6f5); font-size:42px; text-align:right; }
+.board { position:absolute; right:40px; top:30px; width:230px; padding:10px 18px; background:#2a1d17; color:#fff;
+  border:8px solid #6b3f2a; border-radius:8px; font-size:17px; }
+.board h4 { color:#ffcf4a; margin:0 0 4px; font-weight:400; font-size:20px; }
+.board p { display:flex; justify-content:space-between; margin:0; line-height:1.6; }
+.counter { position:absolute; left:0; right:0; bottom:0; height:120px; z-index:5;
+  background:linear-gradient(#a8693f 0 16px,#6b3f2a 16px); box-shadow:0 -6px 14px #0004; }
+.deco { position:absolute; bottom:105px; font-size:48px; z-index:6; }
+.cust { position:absolute; bottom:90px; width:110px; height:230px; z-index:3; }
+.cust .head { position:absolute; left:0; right:0; top:20px; text-align:center; font-size:74px; line-height:1; z-index:2; }
+.cust .body { position:absolute; left:14px; right:14px; top:100px; bottom:0; border-radius:34px 34px 0 0; }
+.cust.walk .head { animation: bob .45s infinite; }
+.cust.wait .head { animation: wig 1s infinite; }
+.bubble { position:absolute; left:40px; bottom:100%; margin-bottom:-14px; min-width:150px; padding:8px 14px; background:#fff;
+  border:3px solid #3a2318; border-radius:16px; font-size:17px; text-align:center; white-space:nowrap; z-index:4; }
+.pat { height:7px; margin-top:6px; background:#e8dccb; border-radius:8px; overflow:hidden; }
+.pat i { display:block; height:100%; }
+.hudbar { display:flex; justify-content:space-between; gap:12px; margin-bottom:8px; font-size:20px; }
+.hudbar span { background:#2a1d17; color:#ffcf4a; padding:6px 16px; border-radius:14px; }
+.hudbar .msg { flex:1; color:#fff; }
+.cup { width:130px; height:150px; margin:0 auto; border:5px solid #aaa; border-top:0; border-radius:0 0 30px 30px;
+  background:#00000010; overflow:hidden; display:flex; flex-direction:column-reverse; }
+.cup div { flex:0 0 16.66%; }
+.cupicons { text-align:center; font-size:26px; min-height:36px; margin-top:6px; }
+div.stButton > button { height: 78px; border-radius: 16px; border: 3px solid #3a2318; font-size: 18px;
+  box-shadow: 0 5px 0 #3a2318; transition: transform .1s; }
+div.stButton > button:hover:not(:disabled) { transform: translateY(-4px); }
+div.stButton > button:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 #3a2318; }
+@keyframes walkin  { from { left:-15%; } to { left:42%; } }
+@keyframes walkout { from { left:42%; } to { left:120%; } }
+@keyframes bob { 50% { transform: translateY(-8px); } }
+@keyframes wig { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+</style>
+""", unsafe_allow_html=True)
 
 st.title("☕ 갓썸 카페 타이쿤")
 
-# 상단 상태바 (돈 & 메세지)
-player = get_player_info()
-col_status1, col_status2 = st.columns([2, 1])
-with col_status1:
-    st.info(f"📢 알림: {st.session_state.message}")
-with col_status2:
-    st.success(f"💰 현재 잔고: {player['money']:,} 원")
+# ---------------- 실시간 장면 (1초마다 자동 갱신) ----------------
+@st.fragment(run_every=1)
+def scene():
+    now = time.time()
+    c = S.cust
 
-st.markdown("---")
-
-# 메인 화면 영역
-col_desk, col_inventory = st.columns([3, 1])
-
-with col_desk:
-    st.subheader("👨‍💼 메인 데스크")
-    
-    # 손님 주문 영역
-    if st.session_state.current_order is None:
-        if st.button("🔔 다음 손님 받기", use_container_width=True):
-            new_customer()
-            st.rerun()
-    else:
-        st.warning(f"🗣️ 현재 주문: **{st.session_state.current_order['name']}**")
-    
-    st.write("### 🗄️ 재료 선택 (클릭하여 컵에 담기)")
-    ingredients = get_ingredients()
-    
-    # 재료 버튼들 (가로로 배치)
-    cols = st.columns(len(ingredients))
-    for i, ing in enumerate(ingredients):
-        with cols[i]:
-            # 재고가 없으면 비활성화 구현도 가능
-            if st.button(f"{ing['icon']}\n{ing['name']}", key=f"ing_{ing['id']}", use_container_width=True):
-                add_ingredient(ing['id'])
-                st.rerun()
-
-    st.markdown("---")
-    st.write("### 🥤 현재 컵 (제조 중)")
-    
-    # 현재 컵에 담긴 재료 시각화
-    if st.session_state.current_cup:
-        cup_display = []
-        for c_id in st.session_state.current_cup:
-            # ID로 이름 찾기
-            ing_name = next(item['icon'] + item['name'] for item in ingredients if item['id'] == c_id)
-            cup_display.append(ing_name)
-        
-        st.markdown(f"<h3 style='text-align: center;'>{' ➡️ '.join(cup_display)}</h3>", unsafe_allow_html=True)
-    else:
-        st.write("컵이 비어있습니다.")
-
-    # 액션 버튼
-    col_serve, col_trash = st.columns(2)
-    with col_serve:
-        if st.button("🛎️ 서빙하기", type="primary", use_container_width=True):
-            serve_drink()
-            st.rerun()
-    with col_trash:
-        if st.button("🗑️ 쓰레기통에 버리기", use_container_width=True):
-            throw_trash()
+    # 새 손님 입장
+    if c is None and now - S.last_leave > 3:
+        S.cust = c = {"menu": random.choice(menus), "face": random.choice(FACES), "shirt": random.choice(SHIRTS),
+                      "t_spawn": now, "t_order": None, "t_leave": None, "happy": False, "penalty": 0}
+        S.msg = "손님이 들어옵니다..."
+    # 퇴장 완료
+    if c and c["t_leave"] and now - c["t_leave"] > LEAVE_SEC:
+        S.cust, S.last_leave, c = None, now, None
+    # 인내심 바닥 → 화나서 퇴장
+    pat = 100.0
+    if c and c["t_order"] and not c["t_leave"]:
+        pat = 100 - (now - c["t_order"]) / PATIENCE_SEC * 100 - c["penalty"]
+        if pat <= 0:
+            c["t_leave"], c["happy"] = now, False
+            S.cup, S.msg = [], "손님이 화나서 떠났어요! 😡"
             st.rerun()
 
-# 우측 사이드바: 실시간 재고 현황
-with col_inventory:
-    st.subheader("📦 실시간 재고")
-    for ing in ingredients:
+    cust_html = ""
+    if c:
+        if c["t_leave"]:
+            el = min(now - c["t_leave"], LEAVE_SEC)
+            style, cls = f"animation:walkout {LEAVE_SEC}s linear forwards;animation-delay:-{el:.2f}s;left:42%;", "walk"
+            text = "완벽해요! 😍" if c["happy"] else "흥! 안 마셔요!"
+            face = "😍" if c["happy"] else "😡"
+        elif now - c["t_spawn"] < ARRIVE_SEC:
+            el = now - c["t_spawn"]
+            style, cls = f"animation:walkin {ARRIVE_SEC}s linear forwards;animation-delay:-{el:.2f}s;left:-15%;", "walk"
+            text, face = "", c["face"]
+        elif c["t_order"]:
+            col = "#4cc38a" if pat > 50 else "#ffcf4a" if pat > 25 else "#e0452f"
+            style, cls = "left:42%;", "wait"
+            text = (f"{c['menu']['name']} 한 잔 주세요!<div class='pat'><i style='width:{max(pat,0):.0f}%;background:{col}'></i></div>")
+            face = "😡" if c["penalty"] else c["face"]
+        else:
+            style, cls, text, face = "left:42%;", "wait", "🔔 주문할게요!", c["face"]
+        bubble = f"<div class='bubble'>{text}</div>" if text else ""
+        cust_html = (f"<div class='cust {cls}' style='{style}'>{bubble}<div class='head'>{face}</div>"
+                     f"<div class='body' style='background:{c['shirt']}'></div></div>")
+
+    board = "".join(f"<p><span>{m['name']}</span><span>{m['price']:,}</span></p>" for m in menus)
+    st.markdown(f"""
+    <div class='hudbar'><span>💰 {S.money:,}원</span><span>☕ {S.served}잔</span><span class='msg'>📢 {S.msg}</span></div>
+    <div class='scene'>
+      <div class='floor'></div>
+      <div class='win'>☀️</div>
+      <div class='board'><h4>오늘의 메뉴</h4>{board}</div>
+      {cust_html}
+      <div class='counter'></div>
+      <div class='deco' style='left:40px'>🪴</div><div class='deco' style='right:60px'>🧾</div>
+    </div>""", unsafe_allow_html=True)
+
+scene()
+
+# ---------------- 조작 영역 ----------------
+col_main, col_side = st.columns([4, 1])
+
+with col_main:
+    if st.button("🔔 주문 받기 (손님이 도착하면 클릭)", use_container_width=True, type="primary", on_click=take_order):
+        pass
+
+    st.markdown("##### 🗄️ 재료 선반 — 클릭해서 컵에 담기")
+    used = {i: S.cup.count(i) for i in set(S.cup)}
+    cols = st.columns(len(ings))
+    for col, ing in zip(cols, ings):
+        left = ing["stock"] - used.get(ing["id"], 0)
+        col.button(f"{ing['icon']}\n{ing['name']} ({left})", key=f"ing_{ing['id']}", use_container_width=True,
+                   disabled=left <= 0 or len(S.cup) >= MAX_CUP, on_click=add_ingredient, args=(ing["id"],))
+
+    layers = "".join(f"<div style='background:{color_of(ing_by_id[i])}'></div>" for i in S.cup)
+    icons = " ".join(ing_by_id[i]["icon"] for i in S.cup)
+    st.markdown(f"<div class='cup'>{layers}</div><div class='cupicons'>{icons}</div>", unsafe_allow_html=True)
+
+    a, b = st.columns(2)
+    a.button("🛎️ 서빙하기", type="primary", use_container_width=True, on_click=serve_drink)
+    b.button("🗑️ 쓰레기통에 버리기", use_container_width=True, on_click=throw_trash)
+
+with col_side:
+    st.markdown("##### 📦 재고")
+    for ing in ings:
         st.write(f"{ing['icon']} {ing['name']}: {ing['stock']}개")
-        if ing['stock'] < 10:
-            st.error("재고 부족 위험!")
-
-    st.markdown("---")
-    st.write("📜 **레시피 힌트**")
-    st.caption("아메리카노: 물 -> 에스프레소")
-    st.caption("아이스 아메리카노: 얼음 -> 물 -> 에스프레소")
-    st.caption("카페라떼: 에스프레소 -> 우유")
+        if ing["stock"] < 10:
+            st.error("재고 부족!")
+    with st.popover("📜 레시피북", use_container_width=True):
+        for m in menus:
+            steps = " → ".join(ing_by_id[i]["icon"] + ing_by_id[i]["name"] for i in recipes.get(m["id"], []))
+            st.write(f"**{m['name']}**: {steps}")
