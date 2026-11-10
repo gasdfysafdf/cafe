@@ -6,8 +6,8 @@ import time
 # --- Supabase 연결 ---
 @st.cache_resource
 def init_connection():
-    url = "당신의_SUPABASE_URL"
-    key = "당신의_SUPABASE_ANON_KEY"
+    url = "https://ccmsgkiqyolowhhgkxnl.supabase.co"
+    key = "sb_publishable_B3WFuDeKlbBQRWjaBXbNXQ_QgLp0JP0"
     return create_client(url, key)
 
 supabase: Client = init_connection()
