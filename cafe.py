@@ -9,7 +9,7 @@ st.set_page_config(page_title="☕ 갓썸 카페 타이쿤", layout="wide")
 # ---------------- Supabase ----------------
 @st.cache_resource
 def init_connection():
-    return create_client("당신의_SUPABASE_URL", "당신의_SUPABASE_ANON_KEY")
+    return create_client("https://ccmsgkiqyolowhhgkxnl.supabase.co", "sb_publishable_B3WFuDeKlbBQRWjaBXbNXQ_QgLp0JP0")
 
 supabase: Client = init_connection()
 PLAYER_NAME = "player1"
