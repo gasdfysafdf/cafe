@@ -1,0 +1,250 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;font-family:'Jua',sans-serif;user-select:none}
+body{background:transparent;overflow:hidden;color:#5a3a22}
+#wrap{position:relative;width:100%}
+#stage{position:absolute;left:50%;margin-left:-480px;top:0;width:960px;height:540px;transform-origin:top center;border-radius:22px;overflow:hidden;border:5px solid #5a3a22;background:#e8c595}
+.scr{position:absolute;inset:0}.hid{display:none!important}
+.abs{position:absolute}
+/* buttons */
+.btn{position:absolute;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;border:4px solid #9a5a22;border-radius:22px;
+ background:linear-gradient(#ffc873,#f29a45);color:#fff;font-size:26px;text-shadow:0 2px 0 #9a5a22;box-shadow:0 6px 0 #9a5a22,0 10px 14px #0004;transition:transform .08s}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #9a5a22}
+.btn.cream{background:linear-gradient(#fff3d6,#f1d3a1);color:#7a4a2a;text-shadow:none;border-color:#b98a5a;box-shadow:0 6px 0 #b98a5a,0 10px 14px #0003}
+.btn.gray{background:linear-gradient(#b9b9c0,#8f8f98);border-color:#5f5f68;box-shadow:0 5px 0 #5f5f68;text-shadow:none}
+.dot{width:36px;height:36px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:#f29a45;font-size:18px;text-shadow:none}
+/* title */
+#title .wall{position:absolute;inset:0 0 28% 0;background:linear-gradient(#f1d3a1,#dfae78)}
+#title .floor{position:absolute;inset:72% 0 0 0;background:conic-gradient(#f6e3c6 25%,#e3bc8e 0 50%,#f6e3c6 0 75%,#e3bc8e 0) 0 0/80px 80px}
+#title .bar{position:absolute;left:0;right:0;top:56%;height:18%;background:linear-gradient(#c98a4b 0 14px,#a8693f 14px);border-top:6px solid #8b5a35}
+.lamp{position:absolute;top:0;width:110px;height:70px;border-radius:55px 55px 6px 6px;background:radial-gradient(#ffe29a,#c9762e);filter:drop-shadow(0 10px 20px #ffd36b88)}
+.lamp::before{content:"";position:absolute;left:54px;top:-90px;width:3px;height:90px;background:#4a3020}
+.chalkb{position:absolute;left:25px;top:90px;width:185px;height:200px;background:#2c3a35;border:9px solid #8b5a35;border-radius:6px;color:#e8e2cc;font-size:21px;padding:14px 10px;line-height:1.7}
+.ttl{position:absolute;left:0;right:0;top:50px;text-align:center;font-size:104px;line-height:1.1;letter-spacing:2px;color:#fff3d6;-webkit-text-stroke:16px #5a3a22;paint-order:stroke fill;filter:drop-shadow(0 8px 0 #0003)}
+.ttl b{color:#ffb23e;font-weight:400}
+.rib{position:absolute;left:50%;margin-left:-135px;top:208px;width:270px;padding:8px 0;text-align:center;font-size:23px;color:#fff3d6;background:linear-gradient(#a8693f,#7a4a2a);border:4px solid #4a2c18;border-radius:12px}
+/* game */
+.win{position:absolute;left:0;right:0;top:0;height:105px;border-bottom:10px solid #a8693f;background:repeating-linear-gradient(90deg,#cfeefa 0 138px,#a8693f 138px 146px),#cfeefa}
+.win::after{content:"";position:absolute;inset:55px 0 0;background:linear-gradient(#0000,#8fcf86aa)}
+.gfloor{position:absolute;left:0;right:0;top:105px;bottom:0;background:repeating-linear-gradient(90deg,#e7b27a 0 118px,#d99f64 118px 121px)}
+.cnt{position:absolute;left:62px;right:0;top:250px;height:80px;z-index:5;background:linear-gradient(#a3a1a8,#7e7a82);border-top:6px solid #b8b6bd;border-radius:14px 0 0 0}
+.cntf{position:absolute;left:62px;right:0;top:330px;height:76px;z-index:5;background:repeating-linear-gradient(90deg,#8a5632 0 60px,#7a4a2a 60px 63px);box-shadow:0 12px 14px #0003}
+.plate{position:absolute;top:262px;width:140px;height:74px;z-index:6;border-radius:12px;background:#f7e8c9;border:4px solid #d7bd8d;display:grid;grid-template:1fr 1fr/1fr 1fr;gap:3px;padding:4px}
+.plate div{background:#fff7e4;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:23px;line-height:1}
+.plate.tray div{cursor:default}
+.pill{position:absolute;top:10px;z-index:9;background:linear-gradient(#fff3d6,#f1d3a1);border:4px solid #8b5a35;border-radius:16px;padding:6px 18px;font-size:21px;white-space:nowrap}
+.clock{position:absolute;right:12px;top:8px;z-index:9;display:flex;align-items:center;gap:0}
+.face{width:78px;height:78px;border-radius:50%;border:6px solid #8b5a35;background:linear-gradient(#ffb36b,#ffe7a8 55%,#9fd6f0);position:relative;z-index:2}
+.face i{position:absolute;left:50%;bottom:50%;width:5px;height:28px;margin-left:-2px;background:#3a2318;border-radius:3px;transform-origin:bottom}
+.ctxt{margin-left:-14px;padding:6px 14px 6px 22px;background:#fff3d6;border:4px solid #8b5a35;border-radius:0 14px 14px 0;text-align:center;font-size:17px;line-height:1.2}
+.ctxt b{font-size:22px;font-weight:400}
+.toast{position:absolute;left:50%;top:64px;transform:translateX(-50%);z-index:20;background:#2a1d17ee;color:#fff;padding:8px 22px;border-radius:14px;font-size:19px;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap}
+.cu{position:absolute;top:62px;width:110px;height:190px;z-index:3;cursor:pointer;transition:left 2.5s linear}
+.cu svg{position:absolute;left:0;top:12px}
+.cu.walk svg{animation:bob .4s infinite}
+.bub{position:absolute;left:50%;top:-58px;transform:translateX(-50%);min-width:130px;padding:6px 12px;background:#fff;border:3px solid #5a3a22;border-radius:16px;text-align:center;white-space:nowrap;font-size:16px;z-index:4}
+.bub::after{content:"";position:absolute;left:50%;bottom:-11px;margin-left:-8px;width:14px;height:14px;background:#fff;border:3px solid #5a3a22;border-width:0 3px 3px 0;transform:rotate(45deg)}
+.bub b{font-size:28px;font-weight:400;vertical-align:middle}
+.pat{height:7px;margin-top:4px;background:#eadfcc;border-radius:6px;overflow:hidden}.pat i{display:block;height:100%}
+@keyframes bob{50%{transform:translateY(-7px)}}
+.panel{position:absolute;left:692px;top:150px;width:256px;z-index:8;background:#fdf3dc;border:5px solid #8b5a35;border-radius:20px;padding:9px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;box-shadow:0 8px 16px #0004}
+.tile{position:relative;height:52px;border-radius:12px;background:linear-gradient(#fff9ea,#f3e2bd);border:3px solid #dcc08e;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;transition:transform .08s}
+.tile:hover{transform:translateY(-3px)}.tile:active{transform:scale(.92)}
+.tile small{position:absolute;right:3px;bottom:0;font-size:13px;color:#7a4a2a}
+.tile.off{opacity:.35;pointer-events:none}
+.stock{left:18px;bottom:16px;width:178px;height:62px;font-size:23px}
+.badge{position:absolute;left:-8px;top:-12px;background:#f29a45;color:#fff;border-radius:10px;padding:0 8px;font-size:14px;border:2px solid #9a5a22}
+.sm{bottom:16px;width:62px;height:62px;font-size:26px;border-radius:18px}
+.easel{position:absolute;left:10px;top:290px;width:72px;height:98px;z-index:7;background:#fff3d6;border:5px solid #8b5a35;border-radius:6px;transform:rotate(-5deg);font-size:13px;text-align:center;padding-top:6px;line-height:1.5}
+/* shop */
+#shop{background:#9a6a44}
+#shop .bgs{position:absolute;inset:0;background:repeating-linear-gradient(#0000 0 150px,#6a4228 150px 162px,#0000 162px 166px),repeating-linear-gradient(90deg,#a8734a 0 90px,#9a6a44 90px 94px)}
+.card{position:absolute;width:164px;height:118px;border-radius:16px;background:linear-gradient(#fdf3dc,#f1d3a1);border:4px solid #c9a06a;box-shadow:0 5px 0 #8b5a35;text-align:center;cursor:pointer}
+.card.sel{border-color:#f29a45}
+.card .ic{font-size:34px;line-height:46px;margin-top:2px}
+.step{display:flex;align-items:center;justify-content:center;gap:10px;font-size:17px}
+.step u{width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid #b98a5a;text-decoration:none;line-height:18px;font-size:18px}
+.buy{position:absolute;left:12px;right:12px;bottom:6px;height:28px;border-radius:14px;background:linear-gradient(#ffc873,#f29a45);border:3px solid #c97a2c;color:#fff;font-size:17px;line-height:22px}
+.dbar{position:absolute;left:140px;top:446px;width:700px;height:76px;border-radius:18px;background:linear-gradient(#fdf3dc,#f1d3a1);border:5px solid #8b5a35;display:flex;align-items:center;padding:0 22px;gap:16px;font-size:20px}
+.dbar .ic{font-size:44px;background:#fff;border-radius:12px;width:62px;height:58px;text-align:center;line-height:58px}
+/* modal */
+#modal{position:absolute;inset:0;z-index:30;background:#000a;display:flex;align-items:center;justify-content:center}
+#modal .box{width:760px;max-height:470px;overflow:auto;background:#fdf3dc;border:6px solid #8b5a35;border-radius:22px;padding:18px 24px;font-size:18px}
+#modal h2{font-weight:400;font-size:30px;margin-bottom:8px}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px}td,th{padding:3px 8px;border-bottom:2px solid #e3cfa6;text-align:left;font-weight:400}
+.kv{display:flex;gap:10px;margin-bottom:8px}.kv div{flex:1;background:#fff;border-radius:12px;padding:6px 10px;text-align:center}.kv b{display:block;font-size:22px;font-weight:400;color:#e8762c}
+.mb{display:inline-block;margin:6px 6px 0 0;padding:6px 18px;border-radius:14px;background:#f29a45;color:#fff;cursor:pointer;border:3px solid #c97a2c}
+</style></head><body>
+<div id="wrap"><div id="stage">
+
+<!-- ============ TITLE ============ -->
+<div id="title" class="scr">
+ <div class="wall"></div><div class="floor"></div><div class="bar"></div>
+ <div class="lamp" style="left:105px"></div><div class="lamp" style="left:735px"></div>
+ <div class="chalkb">Coffee<br>Latte<br>Ade<br>Dessert<br><span style="font-size:40px">☕</span></div>
+ <div class="abs" style="right:30px;top:90px;width:200px;height:230px;border:9px solid #8b5a35;background:linear-gradient(#bfe6f5,#d9f2d0);border-radius:8px"></div>
+ <div class="abs" style="left:20px;top:330px;font-size:60px;z-index:2">🧁🍰</div>
+ <div class="abs" style="right:40px;top:330px;font-size:58px;z-index:2">🫖</div>
+ <div class="abs" style="left:2px;top:56px;font-size:70px">🌿</div><div class="abs" style="right:6px;bottom:30px;font-size:80px">🪴</div>
+ <div class="abs" style="left:0;right:0;top:-6px;text-align:center;font-size:62px">☕</div>
+ <div class="ttl" style="top:62px"><span>카페</span> <b>러쉬!</b></div>
+ <div class="rib">🐾 운영 시뮬레이터 🐾</div>
+ <div class="btn" style="left:330px;top:285px;width:300px;height:74px" onclick="go('game')"><span class="dot">▶</span>시작하기</div>
+ <div class="btn cream" style="left:330px;top:380px;width:300px;height:70px" onclick="go('how')"><span class="dot" style="background:none">📖</span>게임 방법</div>
+ <div id="err" class="abs" style="left:0;right:0;bottom:6px;text-align:center;color:#b3261e;font-size:17px;z-index:5"></div>
+</div>
+
+<!-- ============ GAME ============ -->
+<div id="game" class="scr hid">
+ <div class="win"></div><div class="gfloor"></div>
+ <div class="abs" style="left:16px;top:18px;width:130px;height:76px;background:#2c3a35;border:7px solid #8b5a35;border-radius:8px;color:#fff;font-size:22px;text-align:center;line-height:60px;z-index:2">Coffee ☕</div>
+ <div class="abs" style="left:2px;top:56px;font-size:46px;z-index:3">🪴</div>
+ <div class="pill" style="left:370px" id="coin"></div>
+ <div class="clock"><div class="face"><i id="hand"></i></div><div class="ctxt" id="ctxt"></div></div>
+ <div id="toast" class="toast"></div>
+ <div id="custs"></div>
+ <div class="cnt"></div><div class="cntf"></div>
+ <div class="abs" style="left:76px;top:196px;font-size:58px;z-index:6">🖥️</div>
+ <div class="plate" id="slots" style="left:200px"></div>
+ <div class="plate tray" id="tray" style="left:420px"></div>
+ <div class="abs" style="left:200px;top:340px;z-index:6;font-size:15px;color:#fff;text-shadow:0 1px 2px #000">① 재료 올리는 곳</div>
+ <div class="abs" style="left:420px;top:340px;z-index:6;font-size:15px;color:#fff;text-shadow:0 1px 2px #000">② 완성 음료 (손님 클릭 → 서빙)</div>
+ <div class="easel">MENU<br>━━<br>━━<br>━━</div>
+ <div class="panel" id="panel"></div>
+ <div class="btn" style="left:692px;top:392px;width:170px;height:60px;font-size:24px;z-index:8" onclick="brew()">🧑‍🍳 제조하기</div>
+ <div class="btn gray" style="left:872px;top:392px;width:76px;height:60px;font-size:28px;z-index:8" onclick="clr()">🗑️</div>
+ <div class="btn cream stock" onclick="go('shop')">📦 재고 관리<span class="badge" id="lowb"></span></div>
+ <div class="btn cream sm" style="left:208px" onclick="stats()">📊</div>
+ <div class="btn cream sm" style="left:282px" onclick="book()">📜</div>
+ <div class="btn cream sm" style="left:356px" onclick="go('title')">🏠</div>
+</div>
+
+<!-- ============ SHOP ============ -->
+<div id="shop" class="scr hid">
+ <div class="bgs"></div>
+ <div class="pill" style="left:370px" id="coin2"></div>
+ <div class="clock"><div class="face"><i id="hand2"></i></div><div class="ctxt" id="ctxt2"></div></div>
+ <div id="toast2" class="toast"></div>
+ <div id="cards"></div>
+ <div class="btn cream" style="left:20px;top:452px;width:104px;height:64px;font-size:21px" onclick="go('game')">← 뒤로</div>
+ <div class="dbar" id="dbar"></div>
+</div>
+
+<!-- ============ HOW ============ -->
+<div id="how" class="scr hid" style="background:#f1d3a1;padding:34px 60px;font-size:23px;line-height:1.75">
+ <div style="font-size:42px">📖 게임 방법</div>
+ ① 손님이 오면 말풍선에 <b>주문</b>이 떠요.<br>② 오른쪽 선반에서 <b>레시피 순서대로</b> 재료를 눌러 접시에 올려요 (📜 레시피).<br>
+ ③ <b>제조하기</b>를 누르면 재료가 차감되고, 맞는 레시피면 완성 접시에 음료가 올라가요.<br>④ 주문한 <b>손님을 클릭</b>하면 서빙! 빨리 줄수록 팁이 붙어요.<br>
+ ⑤ 재료가 없으면 <b>📦 재고 관리</b>에서 구매하세요. 영업시간은 08:00~22:00 이에요.
+ <div class="btn" style="left:60px;bottom:30px;width:200px;height:64px;font-size:23px" onclick="go('title')">← 뒤로가기</div>
+</div>
+
+<div id="modal" class="hid" onclick="if(event.target===this)closeM()"><div class="box" id="mbox"></div></div>
+</div></div>
+
+<script>
+const U="https://ccmsgkiqyolowhhgkxnl.supabase.co",K="sb_publishable_B3WFuDeKlbBQRWjaBXbNXQ_QgLp0JP0",ME="player1";
+const H={apikey:K,"Content-Type":"application/json"};
+async function q(p){const r=await fetch(U+"/rest/v1/"+p,{headers:H}),j=await r.json();if(!r.ok)throw new Error(j.message||r.status);return j}
+async function rpc(n,b){const r=await fetch(U+"/rest/v1/rpc/"+n,{method:"POST",headers:H,body:JSON.stringify(b)}),t=await r.text();let j;try{j=JSON.parse(t)}catch(e){j=t}if(!r.ok)throw new Error(j.message||t);return j}
+const $=s=>document.querySelector(s),fmt=n=>Number(n||0).toLocaleString();
+let ing=[],menus=[],rec={},P={total_income:0,money:0},slots=[],tray=[],custs=[],gt=0,last=-10,gap=2,day=1,gain=0,sel=null,qty={},scr='title',modal=false,cid=0,over=false;
+const byI=id=>ing.find(i=>i.id==id),byM=id=>menus.find(m=>m.id==id);
+
+function fit(){const s=Math.min(innerWidth/970,1.4,innerHeight/550);$('#stage').style.transform=`scale(${s})`;$('#wrap').style.height=550*s+'px'}
+addEventListener('resize',fit);fit();
+
+function go(s){scr=s;for(const x of['title','game','shop','how'])$('#'+x).classList.toggle('hid',x!==s);draw()}
+let tt;function toast(m){for(const id of['toast','toast2']){const t=$('#'+id);t.textContent=m;t.style.opacity=1}clearTimeout(tt);tt=setTimeout(()=>{$('#toast').style.opacity=0;$('#toast2').style.opacity=0},2200)}
+function openM(h){$('#mbox').innerHTML=h;$('#modal').classList.remove('hid');modal=true}
+function closeM(){$('#modal').classList.add('hid');modal=false}
+
+/* ---------- DB ---------- */
+async function refresh(){
+  [ing,P]=await Promise.all([q("ingredients?select=*&order=id"),q("v_player_summary?select=*&username=eq."+ME).then(r=>r[0])]);draw()}
+async function boot(){
+  try{menus=await q("menus?select=*&order=id");
+    for(const r of await q("recipes?select=menu_id,ingredient_id,step_order&order=step_order"))(rec[r.menu_id]=rec[r.menu_id]||[]).push(r.ingredient_id);
+    await refresh();sel=ing[0].id}
+  catch(e){$('#err').textContent='DB 오류: '+e.message+' (migration.sql 실행/RLS 확인)'}}
+
+/* ---------- 그리기 ---------- */
+function clockTxt(){const m=Math.min(480+Math.floor(gt*1.5),1320),h=Math.floor(m/60);return{m,t:`${h<12?'AM':'PM'}<br><b>${String(h>12?h-12:h).padStart(2,'0')}:${String(m%60).padStart(2,'0')}</b>`}}
+function draw(){
+  const c=clockTxt(),rot=(c.m/60%12)*30;
+  for(const [a,b,d] of[['ctxt','hand','coin'],['ctxt2','hand2','coin2']]){$('#'+a).innerHTML=c.t;$('#'+b).style.transform=`rotate(${rot}deg)`;
+    $('#'+d).innerHTML=`🪙 +${fmt(gain)} &nbsp;|&nbsp; 총 수입 : ${fmt(P.total_income)}`}
+  const used={};slots.forEach(i=>used[i]=(used[i]||0)+1);
+  $('#panel').innerHTML=ing.map(i=>{const l=i.stock-(used[i.id]||0);return`<div class="tile ${l<=0||slots.length>=4?'off':''}" title="${i.name}" onclick="add(${i.id})">${i.icon}<small>${l}</small></div>`}).join('');
+  const cell=a=>[0,1,2,3].map(n=>`<div>${a[n]||''}</div>`).join('');
+  $('#slots').innerHTML=cell(slots.map(i=>byI(i)?.icon));$('#tray').innerHTML=cell(tray.map(i=>byM(i)?.icon));
+  const low=ing.filter(i=>i.stock<3).length;$('#lowb').textContent=low||'';$('#lowb').style.display=low?'':'none';
+  if(scr==='shop')drawShop()}
+function drawShop(){
+  $('#cards').innerHTML=ing.map((i,n)=>{const x=140+(n%4)*178,y=62+Math.floor(n/4)*130,k=qty[i.id]||1;
+    return`<div class="card ${sel==i.id?'sel':''}" style="left:${x}px;top:${y}px" onclick="pick(${i.id})"><div class="ic">${i.icon}</div>
+    <div class="step"><u onclick="event.stopPropagation();qc(${i.id},-1)">−</u>${k}<u onclick="event.stopPropagation();qc(${i.id},1)">+</u></div>
+    <div class="buy" onclick="event.stopPropagation();buy(${i.id})">🪙 ${fmt(i.price*k)}</div></div>`}).join('');
+  const s=byI(sel||ing[0]?.id);if(s)$('#dbar').innerHTML=`<span class="ic">${s.icon}</span><span style="flex:1"><b style="font-weight:400;font-size:24px">${s.name}</b><br><span style="font-size:16px">${s.description||''}</span></span><span style="border-left:3px solid #c9a06a;padding-left:18px">보유 수량 : <b style="font-weight:400">${s.stock}개</b><br><span style="font-size:15px">💰 ${fmt(P.money)}원</span></span>`}
+
+/* ---------- 손님 ---------- */
+const LOOKS=[['#3a2318','#ff6b57','#ffd9b8'],['#c97a2c','#6c8ef5','#f6c9a0'],['#222','#4cc38a','#ffd9b8'],['#8a4b2a','#b583e8','#f2bf94'],['#e8c14a','#f58fb3','#ffe0c4'],['#5a3a22','#ffcf4a','#f6c9a0']];
+function chibi(L,mood){const[h,s,k]=L,mouth=mood==1?'M40 70 Q50 82 60 70 Z" fill="#c0392b':mood==2?'M40 76 Q50 66 60 76" fill="none':'M43 70 Q50 75 57 70" fill="none';
+  const brow=mood==2?'<path d="M30 40 L44 46 M70 40 L56 46" stroke="#3a2318" stroke-width="4"/>':'';
+  return`<svg viewBox="0 0 100 150" width="110" height="165"><rect x="20" y="84" width="60" height="70" rx="24" fill="${s}"/><circle cx="50" cy="52" r="34" fill="${k}"/>
+  <path d="M15 52 Q14 10 50 12 Q86 10 85 52 Q72 30 50 32 Q28 30 15 52Z" fill="${h}"/><circle cx="37" cy="56" r="4.5" fill="#3a2318"/><circle cx="63" cy="56" r="4.5" fill="#3a2318"/>
+  <ellipse cx="28" cy="66" rx="6" ry="4" fill="#ff8f8f" opacity=".6"/><ellipse cx="72" cy="66" rx="6" ry="4" fill="#ff8f8f" opacity=".6"/>${brow}<path d="${mouth}" stroke="#3a2318" stroke-width="3" stroke-linecap="round"/></svg>`}
+const SX=[110,310,510],pat=c=>Math.max(0,100-Math.max(0,gt-c.t0-2.5)/40*100);
+function spawn(){const used=custs.map(c=>c.slot),free=[0,1,2].filter(i=>!used.includes(i));if(!free.length)return;
+  const c={id:++cid,slot:free[Math.random()*free.length|0],menu:menus[Math.random()*menus.length|0],t0:gt,out:false,look:LOOKS[Math.random()*LOOKS.length|0],mood:0};
+  c.el=document.createElement('div');c.el.className='cu walk';c.el.style.left='-140px';c.el.onclick=()=>serve(c);c.el.innerHTML='<div class="bub" style="display:none"></div><div class="sv"></div>';
+  $('#custs').appendChild(c.el);c.el.querySelector('.sv').innerHTML=chibi(c.look,0);custs.push(c);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>c.el.style.left=SX[c.slot]+'px'));last=gt;gap=4+Math.random()*5}
+function leave(c,happy){c.out=true;c.tout=gt;c.mood=happy?1:2;c.el.className='cu walk';c.el.querySelector('.sv').innerHTML=chibi(c.look,c.mood);
+  const b=c.el.querySelector('.bub');b.style.display='';b.innerHTML=happy?'완벽해요! 😍':'흥! 안 마셔요! 😡';setTimeout(()=>c.el.style.left='1100px',900)}
+function tick(){if(scr!=='game'||modal||over)return;gt+=.1;const c=clockTxt();draw0(c);
+  if(c.m<1320&&custs.length<3&&gt-last>gap)spawn();
+  for(const k of custs){const b=k.el.querySelector('.bub');
+    if(!k.out&&gt-k.t0>=2.5){k.el.className='cu';const p=pat(k),col=p>50?'#4cc38a':p>25?'#ffcf4a':'#e0452f',m=p<25?2:0;
+      b.style.display='';b.innerHTML=`<b>${k.menu.icon||'☕'}</b> ${k.menu.name}<div class="pat"><i style="width:${p}%;background:${col}"></i></div>`;
+      if(m!==k.mood){k.mood=m;k.el.querySelector('.sv').innerHTML=chibi(k.look,m)}
+      if(p<=0){leave(k,false);rpc('customer_left',{p_username:ME,p_menu_id:k.menu.id}).then(refresh).catch(()=>{});toast('손님이 화나서 떠났어요! 😡')}}}
+  custs=custs.filter(k=>{if(k.out&&gt-k.tout>4){k.el.remove();return false}return true});
+  if(c.m>=1320&&!custs.length&&!over){over=true;stats('🌙 영업 종료!')}}
+function draw0(c){$('#ctxt').innerHTML=c.t;$('#hand').style.transform=`rotate(${(c.m/60%12)*30}deg)`}
+
+/* ---------- 액션 ---------- */
+function add(id){const u=slots.filter(x=>x==id).length,i=byI(id);if(slots.length<4&&i.stock-u>0){slots.push(id);draw()}}
+function clr(){slots=[];draw()}
+async function brew(){
+  if(!slots.length)return toast('재료를 먼저 올려주세요!');if(tray.length>=4)return toast('완성 접시가 가득 찼어요. 서빙하세요!');
+  const used=[...slots];slots=[];draw();
+  try{const id=await rpc('brew_drink',{p_username:ME,p_used:used});
+    if(id>0){tray.push(id);toast('✅ '+byM(id).name+' 완성! 주문한 손님을 클릭하세요')}else toast('💥 레시피에 없는 조합! 재료만 날렸어요')}
+  catch(e){slots=used;toast('❌ '+e.message)}
+  await refresh()}
+async function serve(c){
+  if(c.out||c.busy||gt-c.t0<2.5)return;const i=tray.indexOf(c.menu.id);
+  if(i<0)return toast(`${c.menu.name} 을(를) 먼저 만들어 주세요!`);c.busy=1;
+  const tip=Math.round(c.menu.price*.2*pat(c)/100);
+  try{gain=await rpc('serve_order',{p_username:ME,p_menu_id:c.menu.id,p_tip:tip});tray.splice(i,1);leave(c,true);toast(`+${fmt(gain)}원! (팁 ${fmt(tip)}원)`);await refresh()}
+  catch(e){c.busy=0;toast('❌ '+e.message)}}
+function pick(id){sel=id;drawShop()}
+function qc(id,d){qty[id]=Math.max(1,Math.min(30,(qty[id]||1)+d));sel=id;drawShop()}
+async function buy(id){const k=qty[id]||1;sel=id;
+  try{await rpc('buy_ingredient',{p_username:ME,p_ingredient_id:id,p_qty:k});toast(`✅ ${byI(id).name} ${k}개 구매!`)}catch(e){toast('❌ '+e.message)}
+  await refresh()}
+function book(){openM('<h2>📜 레시피북</h2><table>'+menus.map(m=>`<tr><td>${m.icon||''} <b style="font-weight:400">${m.name}</b></td><td>${(rec[m.id]||[]).map(i=>byI(i).icon+byI(i).name).join(' → ')}</td><td>${fmt(m.price)}원</td></tr>`).join('')+'</table><span class="mb" onclick="closeM()">닫기</span>')}
+async function stats(title){
+  try{await refresh();const[ms,ds]=await Promise.all([q('v_menu_stats?select=*&order=revenue.desc'),q('v_daily_sales?select=*&limit=7')]);
+    openM(`<h2>${title||'📊 영업 통계'}</h2><div class="kv"><div>보유금<b>${fmt(P.money)}</b></div><div>총 수입<b>${fmt(P.total_income)}</b></div><div>재료 지출<b>${fmt(P.total_spent)}</b></div><div>서빙<b>${P.served_count}</b></div><div>실패/이탈<b>${P.fail_count}</b></div></div>
+    <b style="font-weight:400">메뉴별 매출 (v_menu_stats)</b><table><tr><th>메뉴</th><th>판매</th><th>이탈</th><th>매출</th></tr>${ms.map(m=>`<tr><td>${m.name}</td><td>${m.sold}</td><td>${m.angry_left}</td><td>${fmt(m.revenue)}</td></tr>`).join('')}</table>
+    <b style="font-weight:400">일별 매출 (v_daily_sales)</b><table><tr><th>날짜</th><th>판매</th><th>실패</th><th>매출</th></tr>${ds.map(m=>`<tr><td>${m.day}</td><td>${m.sold}</td><td>${m.failed}</td><td>${fmt(m.revenue)}</td></tr>`).join('')}</table>
+    <span class="mb" onclick="newDay()">🌅 새 하루 시작</span><span class="mb" style="background:#999;border-color:#666" onclick="reset()">♻️ DB 초기화</span><span class="mb" style="background:#b98a5a;border-color:#7a4a2a" onclick="closeM()">닫기</span>`)}
+  catch(e){toast('❌ '+e.message)}}
+function clearGame(){custs.forEach(c=>c.el.remove());custs=[];slots=[];tray=[];gt=0;last=-10;over=false;closeM()}
+function newDay(){clearGame();day++;draw();toast(day+'일차 영업 시작!')}
+async function reset(){try{await rpc('reset_game',{p_username:ME});clearGame();day=1;gain=0;await refresh();toast('초기화 완료')}catch(e){toast('❌ '+e.message)}}
+setInterval(tick,100);boot();
+</script></body></html>
