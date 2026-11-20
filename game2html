@@ -94,12 +94,46 @@ table{width:100%;border-collapse:collapse;margin:6px 0 12px}td,th{padding:3px 8p
 .eventNotice{position:absolute;left:50%;top:150px;transform:translateX(-50%);z-index:40;padding:16px 28px;border:5px solid #8b5a35;border-radius:20px;background:#fff3d6;color:#7a3e20;font-size:30px;white-space:nowrap;opacity:0;pointer-events:none;text-shadow:0 1px #fff;box-shadow:0 8px 20px #0005}
 .eventNotice.show{animation:eventFade 1.5s ease forwards}
 @keyframes eventFade{0%{opacity:0;transform:translate(-50%,-12px) scale(.9)}12%{opacity:1;transform:translate(-50%,0) scale(1)}78%{opacity:1}100%{opacity:0;transform:translate(-50%,-8px) scale(.98)}}
-#resultSuccess,#resultFail{background:#3a281e center/cover no-repeat}
-.resultShade{position:absolute;inset:0;background:linear-gradient(#0001,#0005)}
-.resultTitle{position:absolute;left:0;right:0;top:32px;text-align:center;font-size:48px;color:#fff3d6;text-shadow:0 4px 5px #4a2c18}
-.resultSummary{position:absolute;left:300px;top:175px;width:360px;padding:16px;background:#fff3d6eF;border:5px solid #8b5a35;border-radius:20px;text-align:center;font-size:22px;line-height:1.6}
-.resultSummary b{font-size:30px;color:#e8762c;font-weight:400}
-.resultBtn{position:absolute;height:48px;font-size:18px;border-radius:15px}
+/* 성공 / 실패 결과 화면 */
+#resultSuccess {
+  background-image: url("./success.png");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+#resultFail {
+  background-image: url("./fail.png");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* 결과 화면 버튼 */
+.resultBtn {
+  position: absolute;
+  bottom: 16px;
+  height: 48px;
+  font-size: 18px;
+  border-radius: 15px;
+  z-index: 5;
+}
+
+/* 왼쪽 아래 버튼 3개 */
+.resultHome {
+  left: 18px;
+  width: 150px;
+}
+
+.resultReset {
+  left: 178px;
+  width: 90px;
+}
+
+.resultDetail {
+  left: 278px;
+  width: 130px;
+}
 #nicknameError{position:absolute;left:0;right:0;top:319px;text-align:center;color:#b3261e;font-size:16px;z-index:6;opacity:0;transition:opacity .35s;pointer-events:none}
 #nicknameError.show{opacity:1}
 
@@ -171,19 +205,45 @@ table{width:100%;border-collapse:collapse;margin:6px 0 12px}td,th{padding:3px 8p
  <div class="btn" style="left:60px;bottom:30px;width:200px;height:64px;font-size:23px" onclick="go('title')">← 뒤로가기</div>
 </div>
 
+<!-- ============ SUCCESS RESULT ============ -->
 <div id="resultSuccess" class="scr hid">
- <div class="resultShade"></div><div class="resultTitle">🎉 목표 금액 달성!</div>
- <div class="resultSummary" id="successSummary"></div>
- <div class="btn cream resultBtn" style="left:18px;bottom:16px;width:170px" onclick="exitToTitle()">처음으로 돌아가기</div>
- <div class="btn gray resultBtn" style="left:198px;bottom:16px;width:90px" onclick="restart()">리셋</div>
- <div class="btn resultBtn" style="right:18px;bottom:16px;width:150px" onclick="showDetails()">상세보기</div>
+
+  <div class="btn cream resultBtn resultHome"
+       onclick="exitToTitle()">
+    처음 화면으로
+  </div>
+
+  <div class="btn gray resultBtn resultReset"
+       onclick="restart()">
+    리셋
+  </div>
+
+  <div class="btn resultBtn resultDetail"
+       onclick="showDetails()">
+    상세보기
+  </div>
+
 </div>
+
+<!-- ============ FAIL RESULT ============ -->
 <div id="resultFail" class="scr hid">
- <div class="resultShade"></div><div class="resultTitle">😢 목표 금액 미달성</div>
- <div class="resultSummary" id="failSummary"></div>
- <div class="btn cream resultBtn" style="left:18px;bottom:16px;width:170px" onclick="exitToTitle()">처음으로 돌아가기</div>
- <div class="btn gray resultBtn" style="left:198px;bottom:16px;width:90px" onclick="restart()">리셋</div>
- <div class="btn resultBtn" style="right:18px;bottom:16px;width:150px" onclick="showDetails()">상세보기</div>
+
+  <div class="btn cream resultBtn resultHome"
+       onclick="exitToTitle()">
+    처음 화면으로
+  </div>
+
+  <div class="btn gray resultBtn resultReset"
+       onclick="restart()">
+    리셋
+  </div>
+
+  <div class="btn resultBtn resultDetail"
+       onclick="showDetails()">
+    상세보기
+  </div>
+
+</div>
 </div>
 <div id="modal" class="hid" onclick="if(event.target===this)closeM()"><div class="box" id="mbox"></div></div>
 </div></div>
