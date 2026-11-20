@@ -1,0 +1,363 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;font-family:'Jua',sans-serif;user-select:none}
+body{background:transparent;overflow:hidden;color:#5a3a22}
+#wrap{position:relative;width:100%}
+#stage{position:absolute;left:50%;margin-left:-480px;top:0;width:960px;height:540px;transform-origin:top center;border-radius:22px;overflow:hidden;border:5px solid #5a3a22;background:#e8c595}
+.scr{position:absolute;inset:0}.hid{display:none!important}
+.abs{position:absolute}
+/* buttons */
+.btn{position:absolute;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;border:4px solid #9a5a22;border-radius:22px;
+ background:linear-gradient(#ffc873,#f29a45);color:#fff;font-size:26px;text-shadow:0 2px 0 #9a5a22;box-shadow:0 6px 0 #9a5a22,0 10px 14px #0004;transition:transform .08s}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #9a5a22}
+.btn.cream{background:linear-gradient(#fff3d6,#f1d3a1);color:#7a4a2a;text-shadow:none;border-color:#b98a5a;box-shadow:0 6px 0 #b98a5a,0 10px 14px #0003}
+.btn.gray{background:linear-gradient(#b9b9c0,#8f8f98);border-color:#5f5f68;box-shadow:0 5px 0 #5f5f68;text-shadow:none}
+.dot{width:36px;height:36px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:#f29a45;font-size:18px;text-shadow:none}
+/* title */
+#title .wall{position:absolute;inset:0 0 28% 0;background:linear-gradient(#f1d3a1,#dfae78)}
+#title .floor{position:absolute;inset:72% 0 0 0;background:conic-gradient(#f6e3c6 25%,#e3bc8e 0 50%,#f6e3c6 0 75%,#e3bc8e 0) 0 0/80px 80px}
+#title .bar{position:absolute;left:0;right:0;top:56%;height:18%;background:linear-gradient(#c98a4b 0 14px,#a8693f 14px);border-top:6px solid #8b5a35}
+.lamp{position:absolute;top:0;width:110px;height:70px;border-radius:55px 55px 6px 6px;background:radial-gradient(#ffe29a,#c9762e);filter:drop-shadow(0 10px 20px #ffd36b88)}
+.lamp::before{content:"";position:absolute;left:54px;top:-90px;width:3px;height:90px;background:#4a3020}
+.chalkb{position:absolute;left:25px;top:90px;width:185px;height:200px;background:#2c3a35;border:9px solid #8b5a35;border-radius:6px;color:#e8e2cc;font-size:21px;padding:14px 10px;line-height:1.7}
+.ttl{position:absolute;left:0;right:0;top:50px;text-align:center;font-size:104px;line-height:1.1;letter-spacing:2px;color:#fff3d6;-webkit-text-stroke:16px #5a3a22;paint-order:stroke fill;filter:drop-shadow(0 8px 0 #0003)}
+.ttl b{color:#ffb23e;font-weight:400}
+.rib{position:absolute;left:50%;margin-left:-135px;top:208px;width:270px;padding:8px 0;text-align:center;font-size:23px;color:#fff3d6;background:linear-gradient(#a8693f,#7a4a2a);border:4px solid #4a2c18;border-radius:12px}
+/* game */
+.win{position:absolute;left:0;right:0;top:0;height:105px;border-bottom:10px solid #a8693f;background:repeating-linear-gradient(90deg,#cfeefa 0 138px,#a8693f 138px 146px),#cfeefa}
+.win::after{content:"";position:absolute;inset:55px 0 0;background:linear-gradient(#0000,#8fcf86aa)}
+.gfloor{position:absolute;left:0;right:0;top:105px;bottom:0;background:repeating-linear-gradient(90deg,#e7b27a 0 118px,#d99f64 118px 121px)}
+.cnt{position:absolute;left:62px;right:0;top:250px;height:80px;z-index:5;background:linear-gradient(#a3a1a8,#7e7a82);border-top:6px solid #b8b6bd;border-radius:14px 0 0 0}
+.cntf{position:absolute;left:62px;right:0;top:330px;height:76px;z-index:5;background:repeating-linear-gradient(90deg,#8a5632 0 60px,#7a4a2a 60px 63px);box-shadow:0 12px 14px #0003}
+.plate{position:absolute;top:262px;width:140px;height:74px;z-index:6;border-radius:12px;background:#f7e8c9;border:4px solid #d7bd8d;display:grid;grid-template:1fr 1fr/1fr 1fr;gap:3px;padding:4px}
+.plate div{background:#fff7e4;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:23px;line-height:1}
+.plate.tray div{cursor:default}
+.pill{position:absolute;top:10px;z-index:9;background:linear-gradient(#fff3d6,#f1d3a1);border:4px solid #8b5a35;border-radius:16px;padding:6px 16px;font-size:19px;white-space:nowrap}
+.clock{position:absolute;right:12px;top:8px;z-index:9;display:flex;flex-direction:column;align-items:center;gap:2px}
+.face{width:78px;height:78px;border-radius:50%;border:6px solid #8b5a35;background:linear-gradient(#ffb36b,#ffe7a8 55%,#9fd6f0);position:relative;z-index:2}
+.face i{position:absolute;left:50%;bottom:50%;width:5px;height:28px;margin-left:-2px;background:#3a2318;border-radius:3px;transform-origin:bottom}
+.ctxt{margin:0;padding:3px 12px;background:#fff3d6;border:3px solid #8b5a35;border-radius:12px;text-align:center;font-size:16px;line-height:1.2;min-width:78px}
+.ctxt b{font-size:20px;font-weight:400}
+.toast{position:absolute;left:90px;top:418px;z-index:20;background:#2a1d17ee;color:#fff;padding:8px 22px;border-radius:14px;font-size:19px;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap}
+.cu{position:absolute;top:132px;width:110px;height:190px;z-index:3;cursor:pointer;transition:left 2.5s linear}
+.cu svg{position:absolute;left:0;top:12px}
+.cu.walk svg{animation:bob .4s infinite}
+.bub{position:absolute;left:50%;top:-68px;transform:translateX(-50%);min-width:150px;padding:6px 12px;background:#fff;border:3px solid #5a3a22;border-radius:16px;text-align:center;white-space:nowrap;font-size:16px;z-index:4}
+.bub::after{content:"";position:absolute;left:50%;bottom:-11px;margin-left:-8px;width:14px;height:14px;background:#fff;border:3px solid #5a3a22;border-width:0 3px 3px 0;transform:rotate(45deg)}
+.bub b{font-size:28px;font-weight:400;vertical-align:middle}
+.pat{height:7px;margin-top:4px;background:#eadfcc;border-radius:6px;overflow:hidden}.pat i{display:block;height:100%}
+@keyframes bob{50%{transform:translateY(-7px)}}
+.panel{position:absolute;left:692px;top:150px;width:256px;z-index:8;background:#fdf3dc;border:5px solid #8b5a35;border-radius:20px;padding:9px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;box-shadow:0 8px 16px #0004}
+.tile{position:relative;height:52px;border-radius:12px;background:linear-gradient(#fff9ea,#f3e2bd);border:3px solid #dcc08e;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;transition:transform .08s}
+.tile:hover{transform:translateY(-3px)}.tile:active{transform:scale(.92)}
+.tile small{position:absolute;right:3px;bottom:0;font-size:13px;color:#7a4a2a}
+.tile.off{opacity:.35;pointer-events:none}
+.stock{left:18px;bottom:16px;width:178px;height:62px;font-size:23px}
+.badge{position:absolute;left:-8px;top:-12px;background:#f29a45;color:#fff;border-radius:10px;padding:0 8px;font-size:14px;border:2px solid #9a5a22}
+.sm{bottom:16px;width:62px;height:62px;font-size:26px;border-radius:18px}
+.easel{position:absolute;left:10px;top:290px;width:72px;height:98px;z-index:7;background:#fff3d6;border:5px solid #8b5a35;border-radius:6px;transform:rotate(-5deg);font-size:13px;text-align:center;padding-top:6px;line-height:1.5}
+/* shop */
+#shop{background:#9a6a44}
+#shop .bgs{position:absolute;inset:0;background:repeating-linear-gradient(#0000 0 150px,#6a4228 150px 162px,#0000 162px 166px),repeating-linear-gradient(90deg,#a8734a 0 90px,#9a6a44 90px 94px)}
+.card{position:absolute;width:164px;height:118px;border-radius:16px;background:linear-gradient(#fdf3dc,#f1d3a1);border:4px solid #c9a06a;box-shadow:0 5px 0 #8b5a35;text-align:center;cursor:pointer}
+.card.sel{border-color:#f29a45}
+.card .ic{font-size:34px;line-height:46px;margin-top:2px}
+.step{display:flex;align-items:center;justify-content:center;gap:10px;font-size:17px}
+.step u{width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid #b98a5a;text-decoration:none;line-height:18px;font-size:18px}
+.buy{position:absolute;left:12px;right:12px;bottom:6px;height:28px;border-radius:14px;background:linear-gradient(#ffc873,#f29a45);border:3px solid #c97a2c;color:#fff;font-size:17px;line-height:22px}
+.dbar{position:absolute;left:140px;top:446px;width:700px;height:76px;border-radius:18px;background:linear-gradient(#fdf3dc,#f1d3a1);border:5px solid #8b5a35;display:flex;align-items:center;padding:0 22px;gap:16px;font-size:20px}
+.dbar .ic{font-size:44px;background:#fff;border-radius:12px;width:62px;height:58px;text-align:center;line-height:58px}
+/* modal */
+#modal{position:absolute;inset:0;z-index:30;background:#000a;display:flex;align-items:center;justify-content:center}
+#modal .box{width:760px;max-height:470px;overflow:auto;background:#fdf3dc;border:6px solid #8b5a35;border-radius:22px;padding:18px 24px;font-size:18px}
+#modal h2{font-weight:400;font-size:30px;margin-bottom:8px}
+table{width:100%;border-collapse:collapse;margin:6px 0 12px}td,th{padding:3px 8px;border-bottom:2px solid #e3cfa6;text-align:left;font-weight:400}
+.kv{display:flex;gap:10px;margin-bottom:8px}.kv div{flex:1;background:#fff;border-radius:12px;padding:6px 10px;text-align:center}.kv b{display:block;font-size:22px;font-weight:400;color:#e8762c}
+.mb{display:inline-block;margin:6px 6px 0 0;padding:6px 18px;border-radius:14px;background:#f29a45;color:#fff;cursor:pointer;border:3px solid #c97a2c}
+#game::after{content:"";position:absolute;inset:0;z-index:12;pointer-events:none;background:radial-gradient(ellipse at 50% 38%,#fff3 0,#0000 55%,#3a1c0a44 100%)}
+.cu svg{filter:drop-shadow(0 8px 5px #0004)}
+.win{box-shadow:inset 0 -22px 30px #fff9}
+.gfloor::before{content:"";position:absolute;inset:0 0 auto;height:150px;background:linear-gradient(#5a3a2266,#0000)}
+.cnt::after{content:"";position:absolute;left:0;right:0;top:0;height:12px;background:linear-gradient(#fff7,#0000)}
+.tile{box-shadow:0 3px 0 #c9a06a,inset 0 2px 0 #fff;text-shadow:0 2px 3px #0003}
+.plate{box-shadow:0 5px 0 #c9a06a,0 12px 14px #0004}
+.card{box-shadow:0 5px 0 #8b5a35,0 12px 14px #0004}
+#toast2{left:50%;top:60px;transform:translateX(-50%)}
+
+/* 목표 게이지 / 플레이어 표시 / 이벤트 */
+#playerName{position:absolute;left:24px;top:82px;z-index:14;color:#fff3d6;font-size:16px;text-shadow:0 2px 3px #5a3a22}
+.goalWrap{position:absolute;left:465px;top:22px;width:315px;z-index:10;display:flex;align-items:center;gap:8px}
+.goalLabel{white-space:nowrap;font-size:17px;color:#5a3a22;background:#fff3d6;border:3px solid #8b5a35;border-radius:10px;padding:5px 8px}
+.goalTrack{height:22px;flex:1;border:3px solid #8b5a35;border-radius:12px;background:#fff3d6;overflow:hidden;box-shadow:inset 0 2px 4px #0002}
+.goalFill{height:100%;width:0%;background:linear-gradient(90deg,#8bcf75,#f4c45f);transition:width .2s}
+.eventNotice{position:absolute;left:50%;top:150px;transform:translateX(-50%);z-index:40;padding:16px 28px;border:5px solid #8b5a35;border-radius:20px;background:#fff3d6;color:#7a3e20;font-size:30px;white-space:nowrap;opacity:0;pointer-events:none;text-shadow:0 1px #fff;box-shadow:0 8px 20px #0005}
+.eventNotice.show{animation:eventFade 1.5s ease forwards}
+@keyframes eventFade{0%{opacity:0;transform:translate(-50%,-12px) scale(.9)}12%{opacity:1;transform:translate(-50%,0) scale(1)}78%{opacity:1}100%{opacity:0;transform:translate(-50%,-8px) scale(.98)}}
+#resultSuccess,#resultFail{background:#3a281e center/cover no-repeat}
+.resultShade{position:absolute;inset:0;background:linear-gradient(#0001,#0005)}
+.resultTitle{position:absolute;left:0;right:0;top:32px;text-align:center;font-size:48px;color:#fff3d6;text-shadow:0 4px 5px #4a2c18}
+.resultSummary{position:absolute;left:300px;top:175px;width:360px;padding:16px;background:#fff3d6eF;border:5px solid #8b5a35;border-radius:20px;text-align:center;font-size:22px;line-height:1.6}
+.resultSummary b{font-size:30px;color:#e8762c;font-weight:400}
+.resultBtn{position:absolute;height:48px;font-size:18px;border-radius:15px}
+#nicknameError{position:absolute;left:0;right:0;top:319px;text-align:center;color:#b3261e;font-size:16px;z-index:6;opacity:0;transition:opacity .35s;pointer-events:none}
+#nicknameError.show{opacity:1}
+
+</style></head><body>
+<div id="wrap"><div id="stage">
+
+<!-- ============ TITLE ============ -->
+<div id="title" class="scr">
+ <div class="wall"></div><div class="floor"></div><div class="bar"></div>
+ <div class="lamp" style="left:105px"></div><div class="lamp" style="left:735px"></div>
+ <div class="chalkb">Coffee<br>Latte<br>Ade<br>Dessert<br><span style="font-size:40px">☕</span></div>
+ <div class="abs" style="right:30px;top:90px;width:200px;height:230px;border:9px solid #8b5a35;background:linear-gradient(#bfe6f5,#d9f2d0);border-radius:8px"></div>
+ <div class="abs" style="left:20px;top:330px;font-size:60px;z-index:2">🧁🍰</div>
+ <div class="abs" style="right:40px;top:330px;font-size:58px;z-index:2">🫖</div>
+ <div class="abs" style="left:2px;top:56px;font-size:70px">🌿</div><div class="abs" style="right:6px;bottom:30px;font-size:80px">🪴</div>
+ <div class="abs" style="left:0;right:0;top:-6px;text-align:center;font-size:62px">☕</div>
+ <div class="ttl" style="top:62px"><span>카페</span> <b>러쉬!</b></div>
+ <div class="rib">🐾 운영 시뮬레이터 🐾</div>
+ <input id="nickname" maxlength="20" placeholder="닉네임을 입력하세요" autocomplete="off" style="position:absolute;left:330px;top:265px;width:300px;height:52px;border:4px solid #b98a5a;border-radius:16px;text-align:center;font-size:22px;color:#5a3a22;z-index:4">
+ <div class="btn" style="left:330px;top:350px;width:300px;height:60px" onclick="start()"><span class="dot">▶</span>시작하기</div>
+ <div class="btn cream" style="left:330px;top:425px;width:300px;height:60px" onclick="go('how')"><span class="dot" style="background:none">📖</span>게임 방법</div>
+ <div id="err" class="abs" style="left:0;right:0;bottom:6px;text-align:center;color:#b3261e;font-size:17px;z-index:5"></div>
+ <div id="nicknameError">닉네임이 중복되었습니다!</div>
+</div>
+
+<!-- ============ GAME ============ -->
+<div id="game" class="scr hid">
+ <div class="win"></div><div class="gfloor"></div>
+ <div class="btn cream" style="left:16px;top:16px;width:130px;height:62px;font-size:23px;z-index:15" onclick="gameMenu()">☰ 메뉴</div>
+ <div class="abs" style="left:2px;top:56px;font-size:46px;z-index:3">🪴</div>
+ <div id="playerName"></div>
+ <div class="pill" style="left:160px" id="coin"></div>
+ <div class="goalWrap"><div class="goalLabel">목표금액</div><div class="goalTrack"><div class="goalFill" id="goalFill"></div></div></div>
+ <div class="clock"><div class="face"><i id="hand"></i></div><div class="ctxt" id="ctxt"></div></div>
+ <div id="toast" class="toast"></div>
+ <div id="eventNotice" class="eventNotice"></div>
+ <div id="custs"></div>
+ <div class="cnt"></div><div class="cntf"></div>
+ <div class="abs" style="left:76px;top:196px;font-size:58px;z-index:6">🖥️</div>
+ <div class="plate" id="slots" style="left:200px"></div>
+ <div class="plate tray" id="tray" style="left:420px"></div>
+ <div class="abs" style="left:200px;top:340px;z-index:6;font-size:15px;color:#fff;text-shadow:0 1px 2px #000">① 재료 올리는 곳</div>
+ <div class="abs" style="left:420px;top:340px;z-index:6;font-size:15px;color:#fff;text-shadow:0 1px 2px #000">② 완성 음료 (손님 클릭 → 서빙)</div>
+ <div class="easel">MENU<br>━━<br>━━<br>━━</div>
+ <div class="panel" id="panel"></div>
+ <div class="btn" style="left:692px;top:392px;width:170px;height:60px;font-size:24px;z-index:8" onclick="brew()">🧑‍🍳 제조하기</div>
+ <div class="btn gray" style="left:872px;top:392px;width:76px;height:60px;font-size:28px;z-index:8" onclick="clr()">🗑️</div>
+ <div class="btn cream stock" onclick="go('shop')">📦 재고 관리<span class="badge" id="lowb"></span></div>
+ <div class="btn cream sm" style="left:208px" onclick="book()">📜</div>
+</div>
+
+<!-- ============ SHOP ============ -->
+<div id="shop" class="scr hid">
+ <div class="bgs"></div>
+ <div class="pill" style="left:160px" id="coin2"></div>
+ <div class="clock"><div class="face"><i id="hand2"></i></div><div class="ctxt" id="ctxt2"></div></div>
+ <div id="toast2" class="toast"></div>
+ <div id="cards"></div>
+ <div class="btn cream" style="left:20px;top:452px;width:104px;height:64px;font-size:21px" onclick="go('game')">← 뒤로</div>
+ <div class="dbar" id="dbar"></div>
+</div>
+
+<!-- ============ HOW ============ -->
+<div id="how" class="scr hid" style="background:#f1d3a1;padding:34px 60px;font-size:23px;line-height:1.75">
+ <div style="font-size:42px">📖 게임 방법</div>
+ ① 손님이 오면 말풍선에 <b>주문</b>이 떠요.<br>② 오른쪽 선반에서 <b>레시피 순서대로</b> 재료를 눌러 접시에 올려요 (📜 레시피).<br>
+ ③ <b>제조하기</b>를 누르면 재료가 차감되고, 맞는 레시피면 완성 접시에 음료가 올라가요.<br>④ 주문한 <b>손님을 클릭</b>하면 서빙! 빨리 줄수록 팁이 붙어요.<br>
+ ⑤ 재료가 없으면 <b>📦 재고 관리</b>에서 구매하세요. 게임은 <b>2분</b>! 재료 2개씩, 0원으로 시작해서 최대한 많이 벌어보세요.
+ <div class="btn" style="left:60px;bottom:30px;width:200px;height:64px;font-size:23px" onclick="go('title')">← 뒤로가기</div>
+</div>
+
+<div id="resultSuccess" class="scr hid">
+ <div class="resultShade"></div><div class="resultTitle">🎉 목표 금액 달성!</div>
+ <div class="resultSummary" id="successSummary"></div>
+ <div class="btn cream resultBtn" style="left:18px;bottom:16px;width:170px" onclick="exitToTitle()">처음으로 돌아가기</div>
+ <div class="btn gray resultBtn" style="left:198px;bottom:16px;width:90px" onclick="restart()">리셋</div>
+ <div class="btn resultBtn" style="right:18px;bottom:16px;width:150px" onclick="showDetails()">상세보기</div>
+</div>
+<div id="resultFail" class="scr hid">
+ <div class="resultShade"></div><div class="resultTitle">😢 목표 금액 미달성</div>
+ <div class="resultSummary" id="failSummary"></div>
+ <div class="btn cream resultBtn" style="left:18px;bottom:16px;width:170px" onclick="exitToTitle()">처음으로 돌아가기</div>
+ <div class="btn gray resultBtn" style="left:198px;bottom:16px;width:90px" onclick="restart()">리셋</div>
+ <div class="btn resultBtn" style="right:18px;bottom:16px;width:150px" onclick="showDetails()">상세보기</div>
+</div>
+<div id="modal" class="hid" onclick="if(event.target===this)closeM()"><div class="box" id="mbox"></div></div>
+</div></div>
+
+<script>
+const U="https://ccmsgkiqyolowhhgkxnl.supabase.co",K="sb_publishable_B3WFuDeKlbBQRWjaBXbNXQ_QgLp0JP0";
+let ME="",PID="";const GAME_SECONDS=120,GOAL_NET=30000;
+const H={apikey:K,"Content-Type":"application/json"};
+async function q(p){const r=await fetch(U+"/rest/v1/"+p,{headers:H}),j=await r.json();if(!r.ok)throw new Error(j.message||r.status);return j}
+async function rpc(n,b){const r=await fetch(U+"/rest/v1/rpc/"+n,{method:"POST",headers:H,body:JSON.stringify(b)}),t=await r.text();let j;try{j=JSON.parse(t)}catch(e){j=t}if(!r.ok)throw new Error(j.message||t);return j}
+const $=s=>document.querySelector(s),fmt=n=>Number(n||0).toLocaleString();
+let ing=[],menus=[],rec={},P={total_income:0,total_spent:0,money:0},slots=[],tray=[],custs=[],gt=0,gameStartedAt=0,last=-10,gap=2,day=1,gain=0,sel=null,qty={},scr='title',modal=false,cid=0,over=false,nextLossAt=0,resultData=null,eventTimer=null;
+const byI=id=>ing.find(i=>i.id==id),byM=id=>menus.find(m=>m.id==id);
+
+function fit(){const s=Math.min(innerWidth/970,1.4,innerHeight/550);$('#stage').style.transform=`scale(${s})`;$('#wrap').style.height=550*s+'px'}
+addEventListener('resize',fit);fit();
+
+function go(s){scr=s;for(const x of['title','game','shop','how','resultSuccess','resultFail'])$('#'+x).classList.toggle('hid',x!==s);draw()}
+let tt;function toast(m){for(const id of['toast','toast2']){const t=$('#'+id);t.textContent=m;t.style.opacity=1}clearTimeout(tt);tt=setTimeout(()=>{$('#toast').style.opacity=0;$('#toast2').style.opacity=0},2200)}
+function openM(h){$('#mbox').innerHTML=h;$('#modal').classList.remove('hid');modal=true}
+function closeM(){$('#modal').classList.add('hid');modal=false}
+
+/* ---------- DB ---------- */
+async function refresh(){
+  if(!PID) return;
+  const [items,summary]=await Promise.all([
+    q(`player_inventory?select=ingredient_id,stock,ingredients(id,name,icon,price,description)&player_id=eq.${PID}&order=ingredient_id`),
+    q(`v_player_summary?select=*&username=eq.${encodeURIComponent(ME)}`).then(r=>r[0])
+  ]);
+  ing=items.map(x=>({...x.ingredients,stock:x.stock}));P=summary||P;draw()
+}
+async function boot(){
+  try{menus=await q("menus?select=*&order=id");
+    for(const r of await q("recipes?select=menu_id,ingredient_id,step_order&order=step_order"))(rec[r.menu_id]=rec[r.menu_id]||[]).push(r.ingredient_id);
+  }catch(e){$('#err').textContent='DB 오류: '+e.message+' (cafe_db.sql 실행/RLS 확인)'}
+}
+let nicknameErrorTimer;
+function showNicknameError(){const el=$('#nicknameError');el.classList.add('show');clearTimeout(nicknameErrorTimer);nicknameErrorTimer=setTimeout(()=>el.classList.remove('show'),2600)}
+async function registerPlayer(){
+  const name=$('#nickname').value.trim();if(!name)return toast('닉네임을 입력해 주세요.');
+  $('#nicknameError').classList.remove('show');
+  try{PID=await rpc('register_player',{p_username:name});ME=name;await refresh();sel=ing[0]?.id;$('#err').textContent='';return true}
+  catch(e){PID='';ME='';if(e.message.includes('duplicate')||e.message.includes('이미'))showNicknameError();else toast('가입 실패: '+e.message);return false}
+}
+async function exitToTitle(){
+  if(!PID){go('title');return}
+  const old=ME;try{await rpc('delete_player',{p_username:old})}catch(e){toast('플레이어 삭제 실패: '+e.message);return}
+  PID='';ME='';P={total_income:0,money:0};clearGame();$('#nickname').value='';go('title');toast('플레이어 데이터가 삭제됐어요.')
+}
+function gameMenu(){openM(`<h2>☰ 게임 메뉴</h2><div style="display:flex;gap:10px;flex-wrap:wrap"><span class="mb" onclick="stats()">📊 영업 통계</span><span class="mb" onclick="exitToTitle()">🏠 처음 화면으로</span><span class="mb" onclick="restart()">🔄 리셋</span></div><span class="mb" style="background:#b98a5a;border-color:#7a4a2a" onclick="closeM()">닫기</span>`)}
+
+/* ---------- 그리기 ---------- */
+function clockTxt(){const remain=Math.max(0,Math.ceil(GAME_SECONDS-gt));return{t:`<b>${Math.floor(remain/60)}:${String(remain%60).padStart(2,'0')}</b>`}}
+function draw(){
+  const c=clockTxt(),rot=Math.min(1,gt/GAME_SECONDS)*360;
+  for(const [a,b,d] of[['ctxt','hand','coin'],['ctxt2','hand2','coin2']]){$('#'+a).innerHTML=c.t;$('#'+b).style.transform=`rotate(${rot}deg)`;
+    $('#'+d).innerHTML=`💰 ${fmt(P.money)}원　|　+${fmt(gain)}원　|　수입 ${fmt(P.total_income)}원`}
+  const net=Number(P.total_income||0)-Number(P.total_spent||0);
+  if($('#goalFill'))$('#goalFill').style.width=`${Math.max(0,Math.min(100,net/GOAL_NET*100))}%`;
+  if($('#playerName'))$('#playerName').textContent=ME?`플레이어 : ${ME}`:'';
+  const used={};slots.forEach(i=>used[i]=(used[i]||0)+1);
+  $('#panel').innerHTML=ing.map(i=>{const l=i.stock-(used[i.id]||0);return`<div class="tile ${l<=0||slots.length>=4?'off':''}" title="${i.name}" onclick="add(${i.id})">${i.icon}<small>${l}</small></div>`}).join('');
+  const cell=a=>[0,1,2,3].map(n=>`<div>${a[n]||''}</div>`).join('');
+  $('#slots').innerHTML=cell(slots.map(i=>byI(i)?.icon));$('#tray').innerHTML=cell(tray.map(i=>byM(i)?.icon));
+  const low=ing.filter(i=>i.stock<3).length;$('#lowb').textContent=low||'';$('#lowb').style.display=low?'':'none';
+  if(scr==='shop')drawShop()}
+function drawShop(){
+  $('#cards').innerHTML=ing.map((i,n)=>{const x=140+(n%4)*178,y=62+Math.floor(n/4)*130,k=qty[i.id]||1;
+    return`<div class="card ${sel==i.id?'sel':''}" style="left:${x}px;top:${y}px" onclick="pick(${i.id})"><div class="ic">${i.icon}</div>
+    <div class="step"><u onclick="event.stopPropagation();qc(${i.id},-1)">−</u>${k}<u onclick="event.stopPropagation();qc(${i.id},1)">+</u></div>
+    <div class="buy" onclick="event.stopPropagation();buy(${i.id})">🪙 ${fmt(i.price*k)}</div></div>`}).join('');
+  const s=byI(sel||ing[0]?.id);if(s)$('#dbar').innerHTML=`<span class="ic">${s.icon}</span><span style="flex:1"><b style="font-weight:400;font-size:24px">${s.name}</b><br><span style="font-size:16px">${s.description||''}</span></span><span style="border-left:3px solid #c9a06a;padding-left:18px">보유 수량 : <b style="font-weight:400">${s.stock}개</b><br><span style="font-size:15px">💰 ${fmt(P.money)}원</span></span>`}
+
+/* ---------- 손님 ---------- */
+const LOOKS=[['#3a2318','#ff7b8a','#ffe0c8',0],['#c97a2c','#6c8ef5','#ffd9b8',1],['#222','#4cc38a','#ffe0c8',2],['#8a4b2a','#b583e8','#f7cfa6',3],['#e8c14a','#f58fb3','#ffe6d2',0],['#5a3a22','#ffcf4a','#f7cfa6',1],['#ff9ab5','#7fd1c7','#ffe0c8',3],['#2c3a5a','#ff9f5a','#ffd9b8',2]];
+function chibi(L,mood){const[h,s,k,st]=L;
+ const back=st==0?`<path d="M11 58Q9 6 50 6Q91 6 89 58L90 88Q50 100 10 88Z" fill="${h}"/>`:st==3?`<circle cx="12" cy="68" r="13" fill="${h}"/><circle cx="88" cy="68" r="13" fill="${h}"/><circle cx="14" cy="46" r="5" fill="#ff6b8a"/><circle cx="86" cy="46" r="5" fill="#ff6b8a"/>`:st==2?`<circle cx="50" cy="9" r="13" fill="${h}"/>`:'';
+ const fr=st==1?'M13 54L9 26L27 32L33 6L46 26L58 4L67 28L85 12L87 54Q74 34 50 36Q26 34 13 54Z':'M13 54Q10 10 50 10Q90 10 87 54Q78 32 64 36Q50 24 36 36Q22 32 13 54Z';
+ const eyes=mood==1?'<path d="M29 61Q36 51 43 61M57 61Q64 51 71 61" stroke="#3a2318" stroke-width="3.5" fill="none" stroke-linecap="round"/>':'<ellipse cx="36" cy="60" rx="5.5" ry="7" fill="#3a2318"/><ellipse cx="64" cy="60" rx="5.5" ry="7" fill="#3a2318"/><circle cx="38" cy="57" r="2.4" fill="#fff"/><circle cx="66" cy="57" r="2.4" fill="#fff"/><circle cx="34.5" cy="63" r="1.1" fill="#fff"/><circle cx="62.5" cy="63" r="1.1" fill="#fff"/>';
+ const brow=mood==2?'<path d="M27 46L45 52M73 46L55 52" stroke="#3a2318" stroke-width="4" stroke-linecap="round"/>':'';
+ const mouth=mood==1?'<path d="M41 69Q50 84 59 69Z" fill="#c0392b"/><path d="M45 77Q50 81 55 77Q50 74 45 77Z" fill="#ff8f8f"/>':mood==2?'<path d="M42 77Q50 69 58 77" stroke="#3a2318" stroke-width="3.5" fill="none" stroke-linecap="round"/>':'<path d="M43 70Q50 77 57 70" stroke="#3a2318" stroke-width="3.5" fill="none" stroke-linecap="round"/>';
+ const bl=mood==2?'#ff5a5a':'#ff9aa8';
+ return`<svg viewBox="0 0 100 150" width="110" height="165">${back}<rect x="43" y="84" width="14" height="14" fill="${k}"/><path d="M10 150Q12 94 50 92Q88 94 90 150Z" fill="${s}"/><path d="M39 93L50 106L61 93Z" fill="#fff" opacity=".85"/><circle cx="50" cy="56" r="37" fill="${k}"/><ellipse cx="25" cy="71" rx="7" ry="4.5" fill="${bl}" opacity=".55"/><ellipse cx="75" cy="71" rx="7" ry="4.5" fill="${bl}" opacity=".55"/>${eyes}${brow}${mouth}<path d="${fr}" fill="${h}"/><ellipse cx="34" cy="22" rx="9" ry="3.5" fill="#fff" opacity=".25" transform="rotate(-18 34 22)"/></svg>`}
+const SX=[110,310,510],pat=c=>Math.max(0,100-Math.max(0,gt-c.t0-2.5)/40*100);
+function spawn(){const used=custs.map(c=>c.slot),free=[0,1,2].filter(i=>!used.includes(i));if(!free.length)return;
+  const c={id:++cid,slot:free[Math.random()*free.length|0],menu:menus[Math.random()*menus.length|0],t0:gt,out:false,look:LOOKS[Math.random()*LOOKS.length|0],mood:0};
+  c.el=document.createElement('div');c.el.className='cu walk';c.el.style.left='-140px';c.el.onclick=()=>serve(c);c.el.innerHTML='<div class="bub" style="display:none"></div><div class="sv"></div>';
+  $('#custs').appendChild(c.el);c.el.querySelector('.sv').innerHTML=chibi(c.look,0);custs.push(c);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>c.el.style.left=SX[c.slot]+'px'));last=gt;gap=4+Math.random()*5}
+function leave(c,happy){c.out=true;c.tout=gt;c.mood=happy?1:2;c.el.className='cu walk';c.el.querySelector('.sv').innerHTML=chibi(c.look,c.mood);
+  const b=c.el.querySelector('.bub');b.style.display='';b.innerHTML=happy?'완벽해요! 😍':'흥! 안 마셔요! 😡';setTimeout(()=>c.el.style.left='1100px',900)}
+function tick(){
+  if(!PID||over)return;
+  if(!gameStartedAt)return;gt=Math.min(GAME_SECONDS,(Date.now()-gameStartedAt)/1000);const c=clockTxt();draw0(c);
+  if(gt>=nextLossAt&&gt<GAME_SECONDS)triggerStockLoss();
+  // 영업 시간은 재고 화면, 메뉴/통계 모달 등 어떤 UI 이벤트에도 멈추지 않는다.
+  if(scr==='game'&&!modal&&gt-last>gap&&custs.length<3)spawn();
+  if(scr==='game'&&!modal){
+    for(const k of custs){const b=k.el.querySelector('.bub');
+      if(!k.out&&gt-k.t0>=2.5){k.el.className='cu';const p=pat(k),col=p>50?'#4cc38a':p>25?'#ffcf4a':'#e0452f',m=p<25?2:0;
+        b.style.display='';b.innerHTML=`<b>${k.menu.icon||'☕'}</b> ${k.menu.name}<div class="pat"><i style="width:${p}%;background:${col}"></i></div>`;
+        if(m!==k.mood){k.mood=m;k.el.querySelector('.sv').innerHTML=chibi(k.look,m)}
+        if(p<=0){leave(k,false);rpc('customer_left',{p_username:ME,p_menu_id:k.menu.id}).then(refresh).catch(()=>{});toast('손님이 화나서 떠났어요! 😡')}}}
+    custs=custs.filter(k=>{if(k.out&&gt-k.tout>4){k.el.remove();return false}return true});
+  }
+  if(gt>=GAME_SECONDS&&!over){over=true;endGame()}
+}
+function draw0(c){for(const id of ['ctxt','ctxt2'])$('#'+id).innerHTML=c.t;const r=`rotate(${Math.min(1,gt/GAME_SECONDS)*360}deg)`;$('#hand').style.transform=r;$('#hand2').style.transform=r;const net=Number(P.total_income||0)-Number(P.total_spent||0);if($('#goalFill'))$('#goalFill').style.width=`${Math.max(0,Math.min(100,net/GOAL_NET*100))}%`}
+
+async function triggerStockLoss(){
+  if(!nextLossAt||over)return;
+  nextLossAt=gt+50+Math.random()*10;
+  const candidates=ing.filter(i=>i.stock>0);if(!candidates.length)return;
+  const count=Math.min(2+(Math.random()<.5?1:0),candidates.length);
+  const picked=[...candidates].sort(()=>Math.random()-.5).slice(0,count);
+  try{
+    await rpc('lose_inventory',{p_username:ME,p_ingredient_ids:picked.map(i=>i.id)});
+    await refresh();
+    const messages=['도둑이 재고를 훔쳐갔어요!','재고 유통기한이 지나서 폐기했어요!'];
+    const el=$('#eventNotice');el.textContent=messages[Math.random()<.5?0:1];el.classList.remove('show');void el.offsetWidth;el.classList.add('show');
+  }catch(e){console.error('재고 이벤트 실패:',e.message)}
+}
+
+/* ---------- 액션 ---------- */
+function add(id){const u=slots.filter(x=>x==id).length,i=byI(id);if(slots.length<4&&i.stock-u>0){slots.push(id);draw()}}
+async function clr(){
+  if(!slots.length)return;
+  const used=[...slots];slots=[];draw();
+  try{await rpc('discard_ingredients',{p_username:ME,p_used:used});await refresh();toast('🗑️ 올려둔 재료를 폐기했어요. 재고는 복구되지 않습니다.')}
+  catch(e){slots=used;draw();toast('❌ '+e.message)}
+}
+async function brew(){
+  if(!slots.length)return toast('재료를 먼저 올려주세요!');if(tray.length>=4)return toast('완성 접시가 가득 찼어요. 서빙하세요!');
+  const used=[...slots];slots=[];draw();
+  try{const id=await rpc('brew_drink',{p_username:ME,p_used:used});
+    if(id>0){tray.push(id);toast('✅ '+byM(id).name+' 완성! 주문한 손님을 클릭하세요')}else toast('💥 레시피에 없는 조합! 재료만 날렸어요')}
+  catch(e){slots=used;toast('❌ '+e.message)}
+  await refresh()}
+async function serve(c){
+  if(c.out||c.busy||gt-c.t0<2.5)return;const i=tray.indexOf(c.menu.id);
+  if(i<0)return toast(`${c.menu.name} 을(를) 먼저 만들어 주세요!`);c.busy=1;
+  const tip=Math.round(c.menu.price*.2*pat(c)/100);
+  try{gain=await rpc('serve_order',{p_username:ME,p_menu_id:c.menu.id,p_tip:tip});tray.splice(i,1);leave(c,true);toast(`+${fmt(gain)}원! (팁 ${fmt(tip)}원)`);await refresh()}
+  catch(e){c.busy=0;toast('❌ '+e.message)}}
+function pick(id){sel=id;drawShop()}
+function qc(id,d){qty[id]=Math.max(1,Math.min(30,(qty[id]||1)+d));sel=id;drawShop()}
+async function buy(id){const k=qty[id]||1;sel=id;
+  try{await rpc('buy_ingredient',{p_username:ME,p_ingredient_id:id,p_qty:k});toast(`✅ ${byI(id).name} ${k}개 구매!`)}catch(e){toast('❌ '+e.message)}
+  await refresh()}
+function book(){openM('<h2>📜 레시피북</h2><table>'+menus.map(m=>`<tr><td>${m.icon||''} <b style="font-weight:400">${m.name}</b></td><td>${(rec[m.id]||[]).map(i=>byI(i).icon+byI(i).name).join(' → ')}</td><td>${fmt(m.price)}원</td></tr>`).join('')+'</table><span class="mb" onclick="closeM()">닫기</span>')}
+async function stats(title){
+  try{await refresh();const[ms,ds]=await Promise.all([q(`v_menu_stats?select=*&player_id=eq.${PID}&order=revenue.desc`),q(`v_daily_sales?select=*&player_id=eq.${PID}&limit=7`)]);
+    const detailBlock=resultData?`<div style="background:#fff;border-radius:12px;padding:8px 12px;margin-bottom:10px">순수익 <b style="color:#e8762c">${fmt(resultData.net)}원</b>　|　서빙 ${resultData.served}잔　|　실패·이탈 ${resultData.failed}회<br>🏆 인기 메뉴 : ${resultData.popular}</div>`:'';
+    openM(`<h2>${title||'📊 영업 통계'}</h2>${detailBlock}<div class="kv"><div>보유금<b>${fmt(P.money)}</b></div><div>총 수입<b>${fmt(P.total_income)}</b></div><div>재료 지출<b>${fmt(P.total_spent)}</b></div><div>서빙<b>${P.served_count}</b></div><div>실패/이탈<b>${P.fail_count}</b></div></div>
+    <b style="font-weight:400">메뉴별 매출 (v_menu_stats)</b><table><tr><th>메뉴</th><th>판매</th><th>이탈</th><th>매출</th></tr>${ms.map(m=>`<tr><td>${m.name}</td><td>${m.sold}</td><td>${m.angry_left}</td><td>${fmt(m.revenue)}</td></tr>`).join('')}</table>
+    <b style="font-weight:400">일별 매출 (v_daily_sales)</b><table><tr><th>날짜</th><th>판매</th><th>실패</th><th>매출</th></tr>${ds.map(m=>`<tr><td>${m.day}</td><td>${m.sold}</td><td>${m.failed}</td><td>${fmt(m.revenue)}</td></tr>`).join('')}</table>
+    <span class="mb" onclick="restart()">🔄 처음부터 다시</span><span class="mb" style="background:#b98a5a;border-color:#7a4a2a" onclick="closeM()">닫기</span>`)}
+  catch(e){toast('❌ '+e.message)}}
+function clearGame(){custs.forEach(c=>c.el.remove());custs=[];slots=[];tray=[];gt=0;gameStartedAt=0;last=-10;over=false;nextLossAt=0;resultData=null;closeM();$('#eventNotice')?.classList.remove('show')}
+async function restart(){clearGame();gain=0;try{await rpc('reset_game',{p_username:ME});await refresh();nextLossAt=50+Math.random()*10;gameStartedAt=Date.now();go('game');toast('새 게임! 재료 2개씩 · 0원으로 시작')}catch(e){toast('❌ '+e.message)}}
+async function start(){if(!await registerPlayer())return;clearGame();gain=0;nextLossAt=50+Math.random()*10;gameStartedAt=Date.now();go('game');toast('영업 시작! 제한 시간은 2분입니다.')}
+async function showDetails(){if(!resultData)return;await stats('📊 상세 결과');}
+async function endGame(){
+  try{
+    await refresh();
+    const b=(await q(`v_menu_stats?select=name,sold&player_id=eq.${PID}&order=sold.desc&limit=1`))[0];
+    const net=Number(P.total_income||0)-Number(P.total_spent||0);
+    resultData={net,popular:b&&b.sold>0?`${b.name} (${b.sold}잔)`:'-',income:P.total_income||0,spent:P.total_spent||0,served:P.served_count||0,failed:P.fail_count||0};
+    const summary=`총 수입 <b>${fmt(resultData.income)}원</b><br>재료 지출 ${fmt(resultData.spent)}원<br>순수익 <b>${fmt(net)}원</b><br>목표금액 30,000원`;
+    $('#successSummary').innerHTML=summary;$('#failSummary').innerHTML=summary;
+    $('#resultSuccess').style.backgroundImage="url('success.png')";
+    $('#resultFail').style.backgroundImage="url('fail.png')";
+    go(net>=GOAL_NET?'resultSuccess':'resultFail');
+  }catch(e){toast('❌ '+e.message);}
+}
+setInterval(tick,100);boot();
+</script></body></html>
