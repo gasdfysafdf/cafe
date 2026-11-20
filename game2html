@@ -409,15 +409,32 @@ async function showDetails(){if(!resultData)return;await stats('📊 상세 결�
 async function endGame(){
   try{
     await refresh();
-    const b=(await q(`v_menu_stats?select=name,sold&player_id=eq.${PID}&order=sold.desc&limit=1`))[0];
+
+    const b=(await q(
+      `v_menu_stats?select=name,sold&player_id=eq.${PID}&order=sold.desc&limit=1`
+    ))[0];
+
     const net=Number(P.total_income||0)-Number(P.total_spent||0);
-    resultData={net,popular:b&&b.sold>0?`${b.name} (${b.sold}잔)`:'-',income:P.total_income||0,spent:P.total_spent||0,served:P.served_count||0,failed:P.fail_count||0};
-    const summary=`총 수입 <b>${fmt(resultData.income)}원</b><br>재료 지출 ${fmt(resultData.spent)}원<br>순수익 <b>${fmt(net)}원</b><br>목표금액 30,000원`;
-    $('#successSummary').innerHTML=summary;$('#failSummary').innerHTML=summary;
-    $('#resultSuccess').style.backgroundImage="url('success.png')";
-    $('#resultFail').style.backgroundImage="url('fail.png')";
+
+    resultData={
+      net,
+      popular:b&&b.sold>0?`${b.name} (${b.sold}잔)`:'-',
+      income:P.total_income||0,
+      spent:P.total_spent||0,
+      served:P.served_count||0,
+      failed:P.fail_count||0
+    };
+
+    // 성공 / 실패 이미지 지정
+    $('#resultSuccess').style.backgroundImage="url('./success.png')";
+    $('#resultFail').style.backgroundImage="url('./fail.png')";
+
+    // 순수익에 따라 결과 화면 전환
     go(net>=GOAL_NET?'resultSuccess':'resultFail');
-  }catch(e){toast('❌ '+e.message);}
+
+  }catch(e){
+    toast('❌ '+e.message);
+  }
 }
 setInterval(tick,100);boot();
 </script></body></html>
