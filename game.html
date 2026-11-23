@@ -195,7 +195,7 @@ table{width:100%;border-collapse:collapse;margin:6px 0 12px}td,th{padding:3px 8p
  <div style="font-size:42px">📖 게임 방법</div>
  ① 손님이 오면 말풍선에 <b>주문</b>이 떠요.<br>② 오른쪽 선반에서 <b>레시피 순서대로</b> 재료를 눌러 접시에 올려요 (📜 레시피).<br>
  ③ <b>제조하기</b>를 누르면 재료가 차감되고, 맞는 레시피면 완성 접시에 음료가 올라가요.<br>④ 주문한 <b>손님을 클릭</b>하면 서빙! 빨리 줄수록 팁이 붙어요.<br>
- ⑤ 재료가 없으면 <b>📦 재고 관리</b>에서 구매하세요. 게임은 <b>2분</b>! 재료 2개씩, 0원으로 시작해서 최대한 많이 벌어보세요.
+ ⑤ 재료가 없으면 <b>📦 재고 관리</b>에서 구매하세요. 게임은 <b>3분</b>! 재료 2개씩, 0원으로 시작해서 최대한 많이 벌어보세요.
  <div class="btn" style="left:60px;bottom:30px;width:200px;height:64px;font-size:23px" onclick="go('title')">← 뒤로가기</div>
 </div>
 
@@ -419,7 +419,7 @@ async function stats(title){
   catch(e){toast('❌ '+e.message)}}
 function clearGame(){custs.forEach(c=>c.el.remove());custs=[];slots=[];tray=[];gt=0;gameStartedAt=0;last=-10;over=false;nextLossAt=0;resultData=null;closeM();$('#eventNotice')?.classList.remove('show')}
 async function restart(){clearGame();gain=0;try{await rpc('reset_game',{p_username:ME});await refresh();nextLossAt=50+Math.random()*10;gameStartedAt=Date.now();go('game');toast('새 게임! 재료 2개씩 · 0원으로 시작')}catch(e){toast('❌ '+e.message)}}
-async function start(){if(!await registerPlayer())return;clearGame();gain=0;nextLossAt=50+Math.random()*10;gameStartedAt=Date.now();go('game');toast('영업 시작! 제한 시간은 2분입니다.')}
+async function start(){if(!await registerPlayer())return;clearGame();gain=0;nextLossAt=50+Math.random()*10;gameStartedAt=Date.now();go('game');toast('영업 시작! 제한 시간은 3분입니다.')}
 async function showDetails(){if(!resultData)return;await stats('📊 상세 결과');}
 async function endGame(){
   try{
