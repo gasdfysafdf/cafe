@@ -395,7 +395,7 @@ async function exitToTitle(){
   const old=ME;try{await rpc('delete_player',{p_username:old})}catch(e){toast('플레이어 삭제 실패: '+e.message);return}
   PID='';ME='';P={total_income:0,money:0};sessionExpired=false;clearGame();$('#nickname').value='';go('title');toast('플레이어 데이터가 삭제됐어요.')
 }
-function gameOption(){openM(`<h2>☰ 게임 설정</h2>${volHtml()}<div style="display:flex;gap:10px;flex-wrap:wrap"><span class="mb" onclick="stats()">📊 영업 통계</span><span class="mb" onclick="exitToTitle()">🏠 처음 화면으로</span><span class="mb" onclick="restart()">🔄 리셋</span></div><span class="mb" style="background:#b98a5a;border-color:#7a4a2a" onclick="closeM()">닫기</span>`)}
+function gameOption(){openM(`<h2>⚙️ 게임 설정</h2>${volHtml()}<div style="display:flex;gap:10px;flex-wrap:wrap"><span class="mb" onclick="stats()">📊 영업 통계</span><span class="mb" onclick="exitToTitle()">🏠 처음 화면으로</span><span class="mb" onclick="restart()">🔄 리셋</span></div><span class="mb" style="background:#b98a5a;border-color:#7a4a2a" onclick="closeM()">닫기</span>`)}
 
 /* ---------- 그리기 ---------- */
 function clockTxt(){const remain=Math.max(0,Math.ceil(GAME_SECONDS-gt));return{t:`<b>${Math.floor(remain/60)}:${String(remain%60).padStart(2,'0')}</b>`}}
