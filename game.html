@@ -274,7 +274,7 @@ const U="https://ccmsgkiqyolowhhgkxnl.supabase.co",K="sb_publishable_B3WFuDeKlbB
 let ME="",PID="";const GAME_SECONDS=182,GOAL_NET=40000;
 
 // ===== 결과 화면 이미지 설정 (파일은 game.html과 같은 폴더에 두세요) =====
-const IMG_DIR="https://raw.githubusercontent.com/gasdfysafdf/cafe/main/images";   // 이미지를 하위 폴더에 넣으면 예: "images/"
+const IMG_DIR="https://raw.githubusercontent.com/gasdfysafdf/cafe/images";   // 이미지를 하위 폴더에 넣으면 예: "images/"
 // 실패: 5장 중 랜덤 1장
 const FAIL_IMGS=["fail1.png","fail2.png","fail3.png","fail4.png"];
 // 성공: 목표금액(GOAL_NET)을 넘긴 금액 구간별 이미지 (구간마다 랜덤 1장)
@@ -286,7 +286,7 @@ const SUCCESS_TIERS=[
 ];
 
 // ===== 배경음악(BGM) 설정 (mp3 파일은 이미지와 같은 레포 폴더에 두세요) =====
-const BGM_DIR="https://raw.githubusercontent.com/gasdfysafdf/cafe/main/bgm";   // 하위 폴더에 넣으면 예: ".../main/sound/"
+const BGM_DIR="https://raw.githubusercontent.com/gasdfysafdf/cafe/bgm";   // 하위 폴더에 넣으면 예: ".../main/sound/"
 const BGM_FILES={main:"cafemainbgm.mp3",play:"cafeplayingbgm.mp3",fail:"failbgm.mp3",success:"successbgm.mp3"};
 const BGM_LOOP={main:true,play:true,fail:true,success:true};   // false로 바꾸면 한 번만 재생
 // 음량 기본값 (0~100). 설정/메뉴의 슬라이더로 바꾸면 브라우저에 저장됩니다.
@@ -313,7 +313,7 @@ function unlockBgm(){
 ['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,unlockBgm,{passive:true}));
 
 // ===== 버튼 효과음 설정 (mp3 파일은 같은 레포 폴더에 두세요) =====
-const SFX_DIR="https://raw.githubusercontent.com/gasdfysafdf/cafe/main/sfx";   // 하위 폴더에 넣으면 예: ".../main/sound/"
+const SFX_DIR="https://raw.githubusercontent.com/gasdfysafdf/cafe/sfx";   // 하위 폴더에 넣으면 예: ".../main/sound/"
 const SFX_FILES={
   click:"sfx_click.mp3",      // 위에 없는 모든 버튼
   brew:"sfx_click.mp3",        // 제조하기
