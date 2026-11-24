@@ -494,7 +494,7 @@ async function serve(c){
   if(c.out||c.busy||gt-c.t0<2.5)return;const i=tray.indexOf(c.menu.id);
   if(i<0)return toast(`${c.menu.name} 을(를) 먼저 만들어 주세요!`);c.busy=1;
   const tip=Math.round(c.menu.price*.2*pat(c)/100);
-  try{gain=await rpc('serve_order',{p_username:ME,p_menu_id:c.menu.id,p_tip:tip});tray.splice(i,1);leave(c,true);toast(`+${fmt(gain)}원! (팁 ${fmt(tip)}원)`);await refresh()}
+  try{gain=await rpc('serve_order',{p_username:ME,p_menu_id:c.menu.id,p_tip:tip});tray.splice(i,1);leave(c,true);sfx('customer');toast(`+${fmt(gain)}원! (팁 ${fmt(tip)}원)`);await refresh()}
   catch(e){c.busy=0;onErr(e)}}
 function pick(id){sel=id;drawShop()}
 function qc(id,d){qty[id]=Math.max(1,Math.min(30,(qty[id]||1)+d));sel=id;drawShop()}
