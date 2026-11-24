@@ -406,7 +406,7 @@ function spawn(){const used=custs.map(c=>c.slot),free=[0,1,2].filter(i=>!used.in
   $('#custs').appendChild(c.el);c.el.querySelector('.sv').innerHTML=chibi(c.look,0);custs.push(c);
   requestAnimationFrame(()=>requestAnimationFrame(()=>c.el.style.left=SX[c.slot]+'px'));last=gt;gap=4+Math.random()*5}
 function leave(c,happy){c.out=true;c.tout=gt;c.mood=happy?1:2;c.el.className='cu walk';c.el.querySelector('.sv').innerHTML=chibi(c.look,c.mood);
-  const b=c.el.querySelector('.bub');b.style.display='';b.innerHTML=happy?'완벽해요! 😍':'더러워서 간다 이 개새야 😡';setTimeout(()=>c.el.style.left='1100px',900)}
+  const b=c.el.querySelector('.bub');b.style.display='';b.innerHTML=happy?'홀리 퍼킹 왓이즈댓! 아이러브잇!😍':'더러워서 간다 이 개새야 😡';setTimeout(()=>c.el.style.left='1100px',900)}
 function tick(){
   if(!PID||over)return;
   if(!gameStartedAt)return;gt=Math.min(GAME_SECONDS,(Date.now()-gameStartedAt)/1000);const c=clockTxt();draw0(c);
