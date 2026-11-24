@@ -176,7 +176,7 @@ table{width:100%;border-collapse:collapse;margin:6px 0 12px}td,th{padding:3px 8p
 <!-- ============ GAME ============ -->
 <div id="game" class="scr hid">
  <div class="win"></div><div class="gfloor"></div>
- <div class="btn cream" style="left:16px;top:16px;width:100px;height:52px;font-size:23px;z-index:15" onclick="gameMenu()">☰ 설정</div>
+ <div class="btn cream" style="left:16px;top:16px;width:100px;height:52px;font-size:23px;z-index:15" onclick="gameOption()">☰ 설정</div>
  <div class="abs" style="left:2px;top:56px;font-size:46px;z-index:3">🪴</div>
  <div id="playerName"></div>
  <div class="pill" style="left:160px" id="coin"></div>
@@ -395,7 +395,7 @@ async function exitToTitle(){
   const old=ME;try{await rpc('delete_player',{p_username:old})}catch(e){toast('플레이어 삭제 실패: '+e.message);return}
   PID='';ME='';P={total_income:0,money:0};sessionExpired=false;clearGame();$('#nickname').value='';go('title');toast('플레이어 데이터가 삭제됐어요.')
 }
-function gameMenu(){openM(`<h2>☰ 게임 메뉴</h2>${volHtml()}<div style="display:flex;gap:10px;flex-wrap:wrap"><span class="mb" onclick="stats()">📊 영업 통계</span><span class="mb" onclick="exitToTitle()">🏠 처음 화면으로</span><span class="mb" onclick="restart()">🔄 리셋</span></div><span class="mb" style="background:#b98a5a;border-color:#7a4a2a" onclick="closeM()">닫기</span>`)}
+function gameOption(){openM(`<h2>☰ 게임 설정</h2>${volHtml()}<div style="display:flex;gap:10px;flex-wrap:wrap"><span class="mb" onclick="stats()">📊 영업 통계</span><span class="mb" onclick="exitToTitle()">🏠 처음 화면으로</span><span class="mb" onclick="restart()">🔄 리셋</span></div><span class="mb" style="background:#b98a5a;border-color:#7a4a2a" onclick="closeM()">닫기</span>`)}
 
 /* ---------- 그리기 ---------- */
 function clockTxt(){const remain=Math.max(0,Math.ceil(GAME_SECONDS-gt));return{t:`<b>${Math.floor(remain/60)}:${String(remain%60).padStart(2,'0')}</b>`}}
