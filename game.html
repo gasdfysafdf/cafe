@@ -149,6 +149,19 @@ table{width:100%;border-collapse:collapse;margin:6px 0 12px}td,th{padding:3px 8p
 .rankT{margin:0 0 4px}.rankT td,.rankT th{padding:0 10px;font-size:16px;line-height:1.35}
 .rankT td:nth-child(1),.rankT th:nth-child(1){width:70px}.rankT td:nth-child(3),.rankT th:nth-child(3){text-align:right}
 
+ /* ===== 마우스 올리면 살짝 떠오르는 효과 (PC에서만) ===== */
+.easel,.step u{transition:transform .08s}
+.step u{cursor:pointer}
+@media (hover:hover){
+  .btn:hover,.mb:hover,.buy:hover,.card:hover{transform:translateY(-3px)}
+  .step u:hover{transform:scale(1.15)}
+  .easel:hover{transform:rotate(-5deg) translateY(-4px)}
+}
+/* 누르는 동안은 눌리는 모양 유지 (위 hover 규칙보다 뒤에 둬야 함) */
+.btn:active,.mb:active,.buy:active{transform:translateY(4px)}
+.easel:active{transform:rotate(-5deg) scale(.95)}
+.step u:active{transform:scale(.9)}
+ 
 </style></head><body>
 <div id="wrap"><div id="stage">
 
