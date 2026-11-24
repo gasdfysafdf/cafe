@@ -207,7 +207,7 @@ table{width:100%;border-collapse:collapse;margin:6px 0 12px}td,th{padding:3px 8p
  <div class="panel" id="panel"></div>
  <div class="btn" style="left:692px;top:392px;width:170px;height:60px;font-size:24px;z-index:8" data-sfx="brew" onclick="brew()">🧑‍🍳 제조하기</div>
  <div class="btn gray" style="left:872px;top:392px;width:76px;height:60px;font-size:28px;z-index:8" data-sfx="discard" onclick="clr()">🗑️</div>
- <div class="btn cream stock" data-sfx="stock" onclick="go('shop')">📦 재고 관리<span class="badge" id="lowb"></span></div>
+ <div class="btn cream stock" data-sfx="stock" onclick="go('shop')">📦 재고 관리</div>
 </div>
 
 <!-- ============ SHOP ============ -->
@@ -422,7 +422,6 @@ function draw(){
     $('#panel').innerHTML=ing.map(i=>{const l=i.stock;return`<div class="tile ${l<=0||slots.length>=4?'off':''}" title="${i.name}" onclick="add(${i.id})">${i.icon}<small>${l}</small></div>`}).join('');
   const cell=a=>[0,1,2,3].map(n=>`<div>${a[n]||''}</div>`).join('');
   $('#slots').innerHTML=cell(slots.map(i=>byI(i)?.icon));$('#tray').innerHTML=cell(tray.map(i=>byM(i)?.icon));
-  const low=ing.filter(i=>i.stock<3).length;$('#lowb').textContent=low||'';$('#lowb').style.display=low?'':'none';
   if(scr==='shop')drawShop()}
 function drawShop(){
   $('#cards').innerHTML=ing.map((i,n)=>{const x=140+(n%4)*178,y=62+Math.floor(n/4)*130,k=qty[i.id]||1;
