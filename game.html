@@ -204,7 +204,7 @@ table{width:100%;border-collapse:collapse;margin:6px 0 12px}td,th{padding:3px 8p
  <div class="clock"><div class="face"><i id="hand2"></i></div><div class="ctxt" id="ctxt2"></div></div>
  <div id="toast2" class="toast"></div>
  <div id="cards"></div>
- <div class="btn cream" style="left:20px;top:452px;width:104px;height:64px;font-size:21px" data-sfx="stock" onclick="go('game')">← 뒤로</div>
+ <div class="btn cream" style="left:20px;top:452px;width:104px;height:64px;font-size:21px" data-sfx="stockout" onclick="go('game')">← 뒤로</div>
  <div class="dbar" id="dbar"></div>
 </div>
 
@@ -319,6 +319,7 @@ const SFX_FILES={
   brew:"sfx_click.mp3",        // 제조하기
   discard:"sfx_click.mp3",  // 폐기(🗑️)
   stock:"sfx_click.mp3",      // 재고 관리 버튼 + 재고 화면의 뒤로 버튼
+  stockout :"sfx_stockout.mp3"
   recipe:"sfx_recipe.mp3",     // 레시피북(MENU 판) + 레시피북 닫기 버튼
   customer:"sfx_customer.mp3"
 };
