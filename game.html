@@ -324,7 +324,7 @@ const SFX_FILES={
 const sfxEl={};for(const k in SFX_FILES){const a=new Audio(SFX_DIR+SFX_FILES[k]);a.preload='auto';sfxEl[k]=a}
 function sfx(k){const e=sfxEl[k||'click'];if(!e||vol.sfx<=0)return;e.volume=vol.sfx/100;try{e.currentTime=0}catch(x){}const p=e.play();if(p&&p.catch)p.catch(()=>{})}
 // 버튼(.btn .mb .buy +/− 와 data-sfx가 붙은 요소)을 누르면 효과음. data-sfx가 없으면 기본 click 소리
-document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.closest('[data-sfx],.btn,.mb,.buy,.step u');if(b)sfx(b.dataset.sfx||'click')},true);
+document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.closest('[data-sfx],.btn,.mb,.buy,.step u,.tile');if(b)sfx(b.dataset.sfx||'click')},true);
 function setVol(k,v){v=Math.max(0,Math.min(100,Math.round(+v)||0));vol[k]=v;if(k==='bgm')for(const x in bgmEl)bgmEl[x].volume=v/100;
   const l=document.getElementById('volv_'+k);if(l)l.textContent=v;try{localStorage.setItem('cafeVol',JSON.stringify(vol))}catch(e){}}
 function volHtml(){return`<div class="vol"><span>🎵 배경음악 음량</span><input type="range" min="0" max="100" step="1" value="${vol.bgm}" oninput="setVol('bgm',this.value)"><b id="volv_bgm">${vol.bgm}</b></div>
