@@ -137,7 +137,7 @@ INSERT INTO recipes (menu_id, ingredient_id, step_order) VALUES
 (8,6,1),(8,7,2),(8,10,3),
 (9,6,1),(9,7,2),(9,8,3),(9,9,4),
 (10,11,1),(10,6,2),(10,7,3),
-(11,12,1),(11,3,2),(11,8,3),(11,4,4);
+(11,12,1),(11,3,2),(11,4,3),(11,8,4);
 
 -- 닉네임 중복은 UNIQUE 제약으로 원자적으로 차단합니다.
 CREATE OR REPLACE FUNCTION register_player(p_username VARCHAR) RETURNS UUID AS $$
