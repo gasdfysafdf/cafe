@@ -272,13 +272,14 @@ const IMG_DIR="https://raw.githubusercontent.com/gasdfysafdf/cafe/main/images/";
 const FAIL_IMGS=["fail1.png","fail2.png","fail3.png","fail4.png"];
 // 성공: 목표금액(GOAL_NET)을 넘긴 금액 구간별 이미지 (구간마다 랜덤 1장)
 const SUCCESS_TIERS=[
-  {max:1000,     imgs:["success4_1.png"]},  // 초과 0~1,000원
-  {max:5000,     imgs:["success4_1.png"]},  // 1,001~5,000원
-  {max:10000,    imgs:["success4_1.png"]},  // 5,001~10,000원
-  {max:Infinity, imgs:["success4_1.png"]}   // 10,001원 이상
+  {max:1000,     imgs:["success1_1.png","success1_2.png","success1_3.png","success1_4.png"]},  // 초과 0~1,000원
+  {max:5000,     imgs:["success2_1.png","success2_2.png","success2_3.png","success2_4.png"]},  // 1,001~5,000원
+  {max:10000,    imgs:["success3_1.png","success3_2.png","success3_3.png","success3_4.png"]},  // 5,001~10,000원
+  {max:Infinity, imgs:["success4_1.png","success4_2.png","success4_3.png","success4_4.png"]}   // 10,001원 이상
 ];
 
 // ===== 화면 이미지 (IMG_DIR 폴더 안의 파일 이름) =====
+const SCENE_DIR="https://raw.githubusercontent.com/gasdfysafdf/cafe/main/backimage/";   // 배경/매대/시계 등 화면 이미지 폴더
 const SCENE={
   title:"title.png",            // 초기화면 배경
   shop:"stock.png",             // 재고 관리 화면 배경
@@ -287,12 +288,12 @@ const SCENE={
   menuboard:"menuboard.png",    // 레시피 메뉴판 (투명 PNG)
   clock:"clock.png"             // 시계 (바늘은 코드가 그림)
 };
-function applyScene(){const u=f=>`url("${IMG_DIR+f}")`;
+function applyScene(){const u=f=>`url("${SCENE_DIR+f}")`;
   $('#title').style.backgroundImage=u(SCENE.title);$('#shop').style.backgroundImage=u(SCENE.shop);
   $('#gBg').style.backgroundImage=u(SCENE.game);$('#gCounter').style.backgroundImage=u(SCENE.counter);
   $('.easel').style.backgroundImage=u(SCENE.menuboard);
   document.querySelectorAll('.face').forEach(e=>e.style.backgroundImage=u(SCENE.clock))}
-Object.values(SCENE).forEach(f=>{const i=new Image();i.src=IMG_DIR+f});   // 미리 불러오기
+Object.values(SCENE).forEach(f=>{const i=new Image();i.src=SCENE_DIR+f});   // 미리 불러오기
 
 // ===== 배경음악(BGM) 설정 (mp3 파일은 이미지와 같은 레포 폴더에 두세요) =====
 const BGM_DIR="https://raw.githubusercontent.com/gasdfysafdf/cafe/main/bgm/";   // 하위 폴더에 넣으면 예: ".../main/sound/"
