@@ -486,7 +486,7 @@ async function triggerStockLoss(){
   try{
     await rpc('lose_inventory',{p_username:ME,p_ingredient_ids:picked.map(i=>i.id)});
     await refresh();
-    const messages=['난 당신이 당황하길 원해요! 재고 삭제!','그게 왜 너 재고야 ㅋㅋㅋㅋㅋ'];
+    const messages=['도둑이 재고를 훔쳐갔어요!','유통기한이 지난 재고를 버렸어요!','그겤ㅋ 왜 네 재고야ㅋㅋㅋ'];
     showEventNotice(messages[Math.random()<.5?0:1]);
   }catch(e){console.error('재고 이벤트 실패:',e.message)}
 }
